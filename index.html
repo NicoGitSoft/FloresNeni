@@ -1,13 +1,191 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>neni-web</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta
+    name="description"
+    content="Neni — Taller de Flores. Diseño floral hecho a mano en Santiago."
+  />
+
+  <title>Neni — Taller de Flores</title>
+</head>
+
+<body>
+
+<header class="header">
+
+  <a href="/" class="brand">
+    <span class="brand__name">Neni</span>
+    <span class="brand__subtitle">taller de flores</span>
+  </a>
+
+  <nav class="nav">
+    <a href="#flores">Flores</a>
+    <a href="#diseno-neni">Diseño Neni</a>
+    <a href="#nosotros">Nosotros</a>
+  </nav>
+
+  <button class="cart-button">
+    Carrito
+    <span class="cart-count">0</span>
+  </button>
+
+</header>
+
+
+<main>
+
+  <section class="hero">
+
+    <div class="hero__content">
+
+      <p class="hero__eyebrow">
+        Diseño floral · Santiago
+      </p>
+
+      <h1 class="hero__title">
+        Flores para decir
+        <em>lo que a veces cuesta decir.</em>
+      </h1>
+
+      <p class="hero__description">
+        Ramos y composiciones florales diseñadas a mano,
+        respetando la personalidad de cada flor.
+      </p>
+
+      <div class="hero__actions">
+
+        <a href="#flores" class="button button--dark">
+          Ver flores
+        </a>
+
+        <a href="#diseno-neni" class="button button--light">
+          Diseño Neni
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="hero__visual">
+
+      <div class="hero__image-placeholder">
+
+        <span>
+          Aquí irá nuestra fotografía principal Neni
+        </span>
+
+      </div>
+
+      <div class="botanical-leaf botanical-leaf--one">
+        ❧
+      </div>
+
+      <div class="botanical-leaf botanical-leaf--two">
+        ❧
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section class="intro">
+
+    <p class="section-label">
+      Flores para...
+    </p>
+
+    <div class="occasion-grid">
+
+      <a href="#">
+        <span>01</span>
+        Cumpleaños
+      </a>
+
+      <a href="#">
+        <span>02</span>
+        Amor
+      </a>
+
+      <a href="#">
+        <span>03</span>
+        Gracias
+      </a>
+
+      <a href="#">
+        <span>04</span>
+        Porque sí
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <section id="flores" class="products">
+
+    <div class="section-heading">
+
+      <p class="section-label">
+        Favoritos
+      </p>
+
+      <h2>
+        Diseños Neni
+      </h2>
+
+    </div>
+
+    <div id="product-grid" class="product-grid">
+    </div>
+
+  </section>
+
+
+  <section id="diseno-neni" class="custom-design">
+
+    <p class="section-label">
+      Diseño Neni
+    </p>
+
+    <h2>
+      Tú eliges la intención.<br>
+      Nosotros encontramos las flores.
+    </h2>
+
+    <p>
+      Cuéntanos la ocasión, presupuesto y tonos.
+      El resto queda en nuestras manos.
+    </p>
+
+    <a href="#" class="button button--dark">
+      Crear un encargo
+    </a>
+
+  </section>
+
+</main>
+
+
+<footer class="footer">
+
+  <div>
+    <strong>Neni</strong>
+    <span>Taller de Flores</span>
+  </div>
+
+  <p>
+    Santiago · Chile
+  </p>
+
+</footer>
+
+
+<script type="module" src="/src/main.js"></script>
+
+</body>
 </html>
