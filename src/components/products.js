@@ -1,81 +1,119 @@
-const clp = new Intl.NumberFormat(
-  'es-CL',
-  {
-    style: 'currency',
-    currency: 'CLP',
-    maximumFractionDigits: 0
-  }
-);
+import {
+  addToCart
+} from './cart.js';
 
 
-export function renderProducts(products) {
+import {
+  applyImageTone
+} from '../utils/imageTone.js';
+
+
+const clp =
+  new Intl.NumberFormat(
+    'es-CL',
+    {
+      style: 'currency',
+      currency: 'CLP',
+      maximumFractionDigits: 0
+    }
+  );
+
+
+
+export function renderProducts(
+  products
+) {
 
   const grid =
-    document.querySelector('#product-grid');
+    document.querySelector(
+      '#product-grid'
+    );
+
 
   if (!grid) return;
 
 
-  grid.innerHTML = products.map(product => `
+  grid.innerHTML =
+    products.map(product => `
 
-    <article class="product-card">
-
-      <button
-        class="product-card__image"
-        data-product="${product.id}"
-        aria-label="Ver ${product.name}"
+      <article
+        class="product-card"
       >
 
-        <img
-          src="${product.images[0]}"
-          alt="${product.name}"
-          loading="lazy"
+        <button
+          class="product-card__image"
+          data-product="${product.id}"
+          aria-label="Ver ${product.name}"
         >
 
-        ${
-          product.images.length > 1
-            ? `<span class="product-card__photos">
-                 ${product.images.length} fotos
-               </span>`
-            : ''
-        }
-
-      </button>
+          <img
+            src="${product.images[0]}"
+            alt="${product.name}"
+            loading="lazy"
+          >
 
 
-      <div class="product-card__info">
+          ${
+            product.images.length > 1
+              ?
+                `
+                <span
+                  class="product-card__photos"
+                >
+                  ${product.images.length} fotos
+                </span>
+                `
+              :
+                ''
+          }
 
-        <div>
+        </button>
 
-          <h3>${product.name}</h3>
 
-          <p>
-            ${product.composition}
-          </p>
+        <div
+          class="product-card__info"
+        >
+
+          <div>
+
+            <h3>
+              ${product.name}
+            </h3>
+
+            <p>
+              ${product.composition}
+            </p>
+
+          </div>
+
+
+          <strong>
+            ${clp.format(
+              product.price
+            )}
+          </strong>
 
         </div>
 
-        <strong>
-          ${clp.format(product.price)}
-        </strong>
+      </article>
 
-      </div>
-
-    </article>
-
-  `).join('');
+    `).join('');
 
 
   grid.addEventListener(
     'click',
     event => {
 
+
       const button =
         event.target.closest(
           '[data-product]'
         );
 
-      if (!button) return;
+
+      if (!button) {
+        return;
+      }
 
 
       const product =
@@ -86,12 +124,15 @@ export function renderProducts(products) {
         );
 
 
-      openProduct(product);
+      if (product) {
+        openProduct(product);
+      }
 
     }
   );
 
 }
+
 
 
 function openProduct(product) {
@@ -109,13 +150,18 @@ function openProduct(product) {
         'dialog'
       );
 
+
     dialog.id =
       'product-dialog';
+
 
     dialog.className =
       'product-dialog';
 
-    document.body.appendChild(dialog);
+
+    document.body.appendChild(
+      dialog
+    );
 
   }
 
@@ -130,7 +176,9 @@ function openProduct(product) {
     </button>
 
 
-    <div class="product-dialog__gallery">
+    <div
+      class="product-dialog__gallery"
+    >
 
       <img
         id="dialog-main-image"
@@ -141,10 +189,14 @@ function openProduct(product) {
 
       ${
         product.images.length > 1
-          ? `
-            <div class="product-dialog__thumbs">
+          ?
+            `
+            <div
+              class="product-dialog__thumbs"
+            >
 
-              ${product.images.map((image, index) => `
+              ${product.images.map(
+                (image, index) => `
 
                 <button
                   data-gallery-image="${image}"
@@ -158,51 +210,77 @@ function openProduct(product) {
 
                 </button>
 
-              `).join('')}
+              `
+              ).join('')}
 
             </div>
-          `
-          : ''
+            `
+          :
+            ''
       }
 
     </div>
 
 
-    <div class="product-dialog__content">
+    <div
+      class="product-dialog__content"
+    >
 
       <p class="section-label">
         Neni · Taller de Flores
       </p>
 
+
       <h2>
         ${product.name}
       </h2>
 
-      <p class="product-dialog__composition">
+
+      <p
+        class="product-dialog__composition"
+      >
         ${product.composition}
       </p>
 
-      <p class="product-dialog__description">
+
+      <p
+        class="product-dialog__description"
+      >
         ${product.description}
       </p>
 
+
       ${
         product.variable
-          ? `
-            <p class="product-dialog__note">
+          ?
+            `
+            <p
+              class="product-dialog__note"
+            >
               La fotografía es referencial.
-              Algunas flores, follajes o envoltorios
-              pueden variar según disponibilidad.
+              Algunas flores, follajes o
+              envoltorios pueden variar
+              según disponibilidad.
             </p>
-          `
-          : ''
+            `
+          :
+            ''
       }
 
-      <strong class="product-dialog__price">
-        ${clp.format(product.price)}
+
+      <strong
+        class="product-dialog__price"
+      >
+        ${clp.format(
+          product.price
+        )}
       </strong>
 
-      <button class="button button--dark">
+
+      <button
+        class="button button--dark"
+        id="dialog-add-cart"
+      >
         Quiero este ramo
       </button>
 
@@ -211,13 +289,42 @@ function openProduct(product) {
   `;
 
 
+  const mainImage =
+    dialog.querySelector(
+      '#dialog-main-image'
+    );
+
+
+  applyImageTone(
+    dialog,
+    mainImage
+  );
+
+
   dialog
     .querySelector(
       '.product-dialog__close'
     )
     .addEventListener(
       'click',
-      () => dialog.close()
+      () =>
+        dialog.close()
+    );
+
+
+  dialog
+    .querySelector(
+      '#dialog-add-cart'
+    )
+    .addEventListener(
+      'click',
+      () => {
+
+        addToCart(product);
+
+        dialog.close();
+
+      }
     );
 
 
@@ -227,19 +334,25 @@ function openProduct(product) {
     )
     .forEach(button => {
 
+
       button.addEventListener(
         'click',
         () => {
 
-          dialog
-            .querySelector(
-              '#dialog-main-image'
-            )
-            .src =
-              button.dataset.galleryImage;
+
+          mainImage.src =
+            button.dataset.galleryImage;
+
+
+          applyImageTone(
+            dialog,
+            mainImage
+          );
+
 
         }
       );
+
 
     });
 
