@@ -1,0 +1,225 @@
+.hero {
+
+  width:
+    min(
+      calc(100% - 48px),
+      var(--content-width)
+    );
+
+  margin-inline:
+    auto;
+
+  min-height:
+    calc(100vh - 90px);
+
+  display:
+    grid;
+
+  grid-template-columns:
+    .9fr 1.1fr;
+
+  gap:
+    clamp(
+      3rem,
+      6vw,
+      8rem
+    );
+
+  align-items:
+    center;
+
+}
+
+.hero__eyebrow {
+
+  text-transform:
+    uppercase;
+
+  letter-spacing:
+    .18em;
+
+  font-size:
+    .7rem;
+
+  color:
+    var(--wine);
+
+}
+
+.hero__title {
+
+  margin:
+    1rem 0 2rem;
+
+  max-width:
+    11ch;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(
+      3.3rem,
+      6vw,
+      7rem
+    );
+
+  font-weight:
+    normal;
+
+  line-height:
+    .95;
+
+}
+
+.hero__title em {
+
+  font-weight:
+    normal;
+
+  color:
+    var(--wine);
+
+}
+
+.hero__description {
+
+  max-width:
+    440px;
+
+  line-height:
+    1.65;
+
+  color:
+    var(--muted);
+
+}
+
+.hero__actions {
+
+  display:
+    flex;
+
+  gap:
+    1rem;
+
+  margin-top:
+    2rem;
+
+}
+
+.hero__visual {
+
+  position:
+    relative;
+
+}
+
+.hero__image-placeholder {
+
+  aspect-ratio:
+    4 / 5;
+
+  width:
+    100%;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    2rem;
+
+  background:
+    linear-gradient(
+      145deg,
+      #d8c9b6,
+      #ebe2d5
+    );
+
+  color:
+    #766b61;
+
+  text-align:
+    center;
+
+}
+
+.botanical-leaf {
+
+  position:
+    absolute;
+
+  z-index:
+    3;
+
+  color:
+    var(--green);
+
+  font-size:
+    7rem;
+
+  pointer-events:
+    none;
+
+}
+
+.botanical-leaf--one {
+
+  top:
+    10%;
+
+  right:
+    -5%;
+
+}
+
+.botanical-leaf--two {
+
+  bottom:
+    5%;
+
+  left:
+    -7%;
+
+  transform:
+    rotate(180deg);
+
+}
+
+
+@media
+(max-width: 800px) {
+
+  .hero {
+
+    grid-template-columns:
+      1fr;
+
+    padding:
+      3rem 0;
+
+  }
+
+  .hero__visual {
+    order: -1;
+  }
+
+  .hero__title {
+
+    font-size:
+      clamp(
+        3rem,
+        13vw,
+        5rem
+      );
+
+  }
+
+}

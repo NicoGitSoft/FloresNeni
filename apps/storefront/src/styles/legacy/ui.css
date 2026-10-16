@@ -1,0 +1,681 @@
+/* =====================================================
+   BARRA DE DESPACHO
+===================================================== */
+
+.announcement-bar {
+
+  min-height: 34px;
+
+  padding:
+    .55rem
+    1rem;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  background:
+    var(--graphite);
+
+  color:
+    rgba(255,255,255,.88);
+
+  font-size:
+    .72rem;
+
+  letter-spacing:
+    .015em;
+
+}
+
+
+.announcement-bar strong {
+
+  color: white;
+
+  font-weight: 500;
+
+}
+
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header {
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+
+  background:
+    rgba(
+      244,
+      239,
+      231,
+      .88
+    );
+
+  backdrop-filter:
+    blur(16px);
+
+  -webkit-backdrop-filter:
+    blur(16px);
+
+}
+
+
+.nav a {
+
+  transition:
+    color 220ms ease;
+
+}
+
+
+.nav a:hover {
+
+  color:
+    var(--wine);
+
+}
+
+
+
+/* =====================================================
+   SELLO NENI
+===================================================== */
+
+.brand__mark,
+.hero__brand-center,
+.experience__logo {
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  border:
+    5px solid
+    var(
+      --image-tone,
+      var(--wine)
+    );
+
+}
+
+
+/*
+ * El PNG sigue siendo cuadrado.
+ * Agrandamos ligeramente el arte
+ * para que visualmente se comporte
+ * como un sello circular.
+ */
+
+.brand__mark img,
+.hero__brand-center img,
+.experience__logo img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+  object-position:
+    50% 50%;
+
+  transform:
+    scale(1.055);
+
+}
+
+
+/*
+ * Ajuste específico del sello verde.
+ * Corrige visualmente el pequeño
+ * descentramiento del arte original.
+ */
+
+.experience__logo img {
+
+  object-position:
+    49% 50%;
+
+  transform:
+    scale(1.065);
+
+}
+
+
+
+/* =====================================================
+   TONO EXTRAÍDO DE IMAGEN
+===================================================== */
+
+.hero__image-placeholder {
+
+  background:
+
+    radial-gradient(
+      circle at 45% 40%,
+      color-mix(
+        in srgb,
+        var(--image-tone, #713344) 18%,
+        white
+      ),
+      transparent 55%
+    ),
+
+    var(--ivory);
+
+}
+
+
+.experience {
+
+  background:
+
+    linear-gradient(
+      135deg,
+
+      color-mix(
+        in srgb,
+        var(--image-tone, #405547) 12%,
+        var(--ivory)
+      )
+      0%,
+
+      var(--ivory)
+      52%,
+
+      color-mix(
+        in srgb,
+        var(--image-tone, #405547) 20%,
+        white
+      )
+      100%
+    );
+
+}
+
+
+.product-dialog {
+
+  background:
+
+    linear-gradient(
+      135deg,
+
+      color-mix(
+        in srgb,
+        var(--image-tone, #f4efe7) 11%,
+        var(--ivory)
+      ),
+
+      var(--ivory)
+      46%
+    );
+
+}
+
+
+
+/* =====================================================
+   CARRITO
+===================================================== */
+
+.cart-open {
+
+  overflow: hidden;
+
+}
+
+
+.cart-backdrop {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 998;
+
+  background:
+    rgba(
+      15,
+      15,
+      15,
+      .36
+    );
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 300ms ease;
+
+}
+
+
+.cart-backdrop.is-open {
+
+  opacity: 1;
+
+  pointer-events: auto;
+
+}
+
+
+.cart-drawer {
+
+  position: fixed;
+
+  top: 0;
+
+  right: 0;
+
+  z-index: 999;
+
+  width:
+    min(
+      440px,
+      100%
+    );
+
+  height:
+    100dvh;
+
+  padding:
+    2rem;
+
+  display: grid;
+
+  grid-template-rows:
+    auto 1fr auto;
+
+  background:
+    var(--ivory);
+
+  box-shadow:
+    -30px 0 70px
+    rgba(
+      20,
+      20,
+      20,
+      .13
+    );
+
+  transform:
+    translateX(102%);
+
+  transition:
+    transform
+    420ms
+    var(--ease-natural);
+
+}
+
+
+.cart-drawer.is-open {
+
+  transform:
+    translateX(0);
+
+}
+
+
+.cart-drawer__header {
+
+  padding-bottom:
+    1.5rem;
+
+  display: flex;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    space-between;
+
+  border-bottom:
+    1px solid
+    #d5ccbf;
+
+}
+
+
+.cart-drawer__header h2 {
+
+  margin: .3rem 0 0;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    2.3rem;
+
+  font-weight: normal;
+
+}
+
+
+.cart-drawer__close {
+
+  width: 42px;
+
+  height: 42px;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background:
+    var(--paper);
+
+  cursor: pointer;
+
+  font-size:
+    1.5rem;
+
+}
+
+
+.cart-drawer__content {
+
+  overflow-y: auto;
+
+  padding:
+    1rem 0;
+
+}
+
+
+.cart-item {
+
+  padding:
+    1rem 0;
+
+  display: grid;
+
+  grid-template-columns:
+    92px 1fr;
+
+  gap: 1rem;
+
+  border-bottom:
+    1px solid
+    #ded6cc;
+
+}
+
+
+.cart-item img {
+
+  width: 92px;
+
+  height: 115px;
+
+  object-fit: cover;
+
+}
+
+
+.cart-item h3 {
+
+  margin: 0 0 .35rem;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    1.15rem;
+
+  font-weight: normal;
+
+}
+
+
+.cart-item__quantity {
+
+  margin-top: .8rem;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: .8rem;
+
+}
+
+
+.cart-item__quantity button {
+
+  width: 29px;
+
+  height: 29px;
+
+  border:
+    1px solid
+    #aaa096;
+
+  background: transparent;
+
+  cursor: pointer;
+
+}
+
+
+.cart-item__remove {
+
+  margin-top: .7rem;
+
+  padding: 0;
+
+  border: 0;
+
+  background: none;
+
+  color:
+    var(--muted);
+
+  text-decoration:
+    underline;
+
+  cursor: pointer;
+
+  font-size:
+    .75rem;
+
+}
+
+
+.cart-empty {
+
+  padding:
+    4rem 1rem;
+
+  text-align: center;
+
+}
+
+
+.cart-empty p {
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    1.5rem;
+
+}
+
+
+.cart-empty span {
+
+  color:
+    var(--muted);
+
+}
+
+
+.cart-drawer__footer {
+
+  padding-top:
+    1.5rem;
+
+  border-top:
+    1px solid
+    #d5ccbf;
+
+}
+
+
+.cart-subtotal {
+
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  font-size:
+    1.15rem;
+
+}
+
+
+.cart-drawer__footer p,
+.cart-drawer__footer small {
+
+  color:
+    var(--muted);
+
+  font-size:
+    .75rem;
+
+}
+
+
+.cart-checkout {
+
+  width: 100%;
+
+  margin:
+    .7rem 0;
+
+  cursor: pointer;
+
+}
+
+
+
+/* =====================================================
+   WHATSAPP
+===================================================== */
+
+.whatsapp-float {
+
+  position: fixed;
+
+  right: 24px;
+
+  bottom: 24px;
+
+  z-index: 800;
+
+  width: 58px;
+
+  height: 58px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    #25d366;
+
+  color: white;
+
+  box-shadow:
+    0 12px 35px
+    rgba(
+      0,
+      0,
+      0,
+      .20
+    );
+
+  transition:
+    transform
+    250ms
+    var(--ease-natural);
+
+}
+
+
+.whatsapp-float:hover {
+
+  transform:
+    translateY(-4px)
+    scale(1.04);
+
+}
+
+
+.whatsapp-float svg {
+
+  width: 31px;
+
+  height: 31px;
+
+}
+
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media
+(max-width: 800px) {
+
+  .announcement-bar {
+
+    font-size:
+      .65rem;
+
+  }
+
+
+  .cart-drawer {
+
+    padding:
+      1.4rem;
+
+  }
+
+
+  .whatsapp-float {
+
+    right: 16px;
+
+    bottom: 16px;
+
+    width: 54px;
+
+    height: 54px;
+
+  }
+
+}

@@ -1,0 +1,622 @@
+/* =====================================================
+   LOGO PRINCIPAL
+===================================================== */
+
+.brand__mark {
+
+  display: grid;
+
+  place-items: center;
+
+  width: 76px;
+
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 40% 30%,
+      #fffaf4 0%,
+      #f3e8db 45%,
+      #e3d5c5 100%
+    );
+
+  box-shadow:
+    0 10px 35px
+    rgba(58, 45, 37, .10);
+
+  transition:
+    transform 500ms
+    var(--ease-natural),
+    box-shadow 500ms
+    var(--ease-natural);
+
+}
+
+
+.brand__mark img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+}
+
+
+.brand:hover .brand__mark {
+
+  transform:
+    scale(1.045)
+    rotate(-1.5deg);
+
+  box-shadow:
+    0 16px 45px
+    rgba(58, 45, 37, .14);
+
+}
+
+
+
+/* =====================================================
+   LOGO GRANDE DEL HERO
+===================================================== */
+
+.hero__brand-center {
+
+  width:
+    min(72%, 430px);
+
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 30px 80px
+    rgba(80, 55, 45, .10);
+
+}
+
+
+.hero__brand-center img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+}
+
+
+
+/* =====================================================
+   FLOWER BAR
+===================================================== */
+
+.experience {
+
+  width:
+    min(
+      calc(100% - 48px),
+      var(--content-width)
+    );
+
+  margin:
+    var(--space-xl)
+    auto;
+
+  display: grid;
+
+  grid-template-columns:
+    .85fr 1.15fr;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      #e8dfd2 0%,
+      #f4efe7 48%,
+      #dde4dc 100%
+    );
+
+}
+
+
+.experience__visual {
+
+  min-height: 600px;
+
+  display: grid;
+
+  place-items: center;
+
+  position: relative;
+
+}
+
+
+.experience__halo {
+
+  width:
+    min(75%, 430px);
+
+  aspect-ratio: 1;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(75, 103, 78, .24) 0%,
+      rgba(75, 103, 78, .10) 45%,
+      rgba(75, 103, 78, 0) 72%
+    );
+
+}
+
+
+.experience__logo {
+
+  width: 78%;
+
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 30px 80px
+    rgba(40, 60, 45, .17);
+
+  transition:
+    transform 700ms
+    var(--ease-natural);
+
+}
+
+
+.experience:hover
+.experience__logo {
+
+  transform:
+    scale(1.035)
+    rotate(1deg);
+
+}
+
+
+.experience__logo img {
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+}
+
+
+.experience__content {
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  padding:
+    clamp(
+      3rem,
+      7vw,
+      7rem
+    );
+
+}
+
+
+.experience__content h2 {
+
+  margin:
+    .6rem 0
+    2rem;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(
+      3rem,
+      5vw,
+      5.5rem
+    );
+
+  font-weight: normal;
+
+  line-height: .98;
+
+}
+
+
+.experience__content > p:not(.section-label) {
+
+  max-width: 600px;
+
+  color:
+    var(--muted);
+
+  line-height: 1.75;
+
+}
+
+
+.experience__content
+.button {
+
+  width: fit-content;
+
+  margin-top: 1.5rem;
+
+}
+
+
+
+/* =====================================================
+   TALLERES
+===================================================== */
+
+.workshops {
+
+  width:
+    min(
+      calc(100% - 48px),
+      var(--content-width)
+    );
+
+  margin:
+    var(--space-xl)
+    auto;
+
+}
+
+
+.workshops__header {
+
+  max-width: 950px;
+
+}
+
+
+.workshops__header h2 {
+
+  margin:
+    .6rem 0
+    2rem;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-weight: normal;
+
+  font-size:
+    clamp(
+      3rem,
+      5vw,
+      5.5rem
+    );
+
+  line-height: 1;
+
+}
+
+
+.workshops__grid {
+
+  margin-top: 4rem;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  border-top:
+    1px solid
+    #ccc2b7;
+
+}
+
+
+.workshops__grid article {
+
+  padding:
+    2.5rem
+    2rem
+    3rem
+    0;
+
+  border-bottom:
+    1px solid
+    #ccc2b7;
+
+}
+
+
+.workshops__grid article +
+article {
+
+  padding-left: 2rem;
+
+  border-left:
+    1px solid
+    #ddd4ca;
+
+}
+
+
+.workshops__grid span {
+
+  color:
+    var(--muted);
+
+  font-size: .72rem;
+
+}
+
+
+.workshops__grid h3 {
+
+  margin:
+    1.5rem 0
+    .8rem;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size: 1.75rem;
+
+  font-weight: normal;
+
+}
+
+
+.workshops__grid p {
+
+  max-width: 340px;
+
+  color:
+    var(--muted);
+
+  line-height: 1.65;
+
+}
+
+
+
+/* =====================================================
+   CONTACTO TALLERES
+===================================================== */
+
+.workshops__contact {
+
+  margin-top: 4rem;
+
+  padding:
+    3rem;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 3rem;
+
+  background:
+    var(--paper);
+
+}
+
+
+.workshops__contact h3 {
+
+  margin:
+    .5rem 0 0;
+
+  max-width: 600px;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(
+      1.8rem,
+      3vw,
+      3rem
+    );
+
+  font-weight: normal;
+
+}
+
+
+.workshops__actions {
+
+  display: flex;
+
+  gap: 1rem;
+
+}
+
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer__brand {
+
+  display: flex !important;
+
+  flex-direction: row !important;
+
+  align-items: center;
+
+  gap: 1rem;
+
+}
+
+
+.footer__brand img {
+
+  width: 58px;
+
+  height: 58px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+}
+
+
+.footer__contact {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: .5rem;
+
+  font-size: .85rem;
+
+  color:
+    var(--muted);
+
+}
+
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media
+(max-width: 800px) {
+
+
+  .brand__mark {
+
+    width: 62px;
+
+  }
+
+
+  .experience {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .experience__visual {
+
+    min-height: 380px;
+
+  }
+
+
+  .experience__content {
+
+    padding:
+      3rem 1.5rem;
+
+  }
+
+
+  .workshops__grid {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+
+  .workshops__grid article +
+  article {
+
+    padding-left: 0;
+
+    border-left: 0;
+
+  }
+
+
+  .workshops__contact {
+
+    flex-direction:
+      column;
+
+    align-items:
+      flex-start;
+
+    padding:
+      2rem 1.5rem;
+
+  }
+
+
+  .workshops__actions {
+
+    width: 100%;
+
+    flex-direction:
+      column;
+
+  }
+
+
+  .workshops__actions
+  .button {
+
+    width: 100%;
+
+  }
+
+
+  .footer {
+
+    gap: 2rem;
+
+    flex-direction: column;
+
+  }
+
+
+  .footer__contact {
+
+    align-items:
+      flex-start;
+
+  }
+
+
+}
