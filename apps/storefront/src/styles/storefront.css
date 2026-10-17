@@ -534,3 +534,174 @@ a {
   }
 
 }
+
+/* =========================================================
+   CART
+   ========================================================= */
+
+.cart-summary {
+  max-width:
+    var(--page-width);
+
+  margin:
+    0 auto 2rem;
+
+  padding:
+    1.2rem
+    clamp(1.2rem, 4vw, 4rem);
+
+  background:
+    var(--neni-paper);
+
+  border-radius:
+    1rem;
+}
+
+.cart-summary__header {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    1rem;
+}
+
+.cart-summary__header span {
+  min-width:
+    2rem;
+
+  padding:
+    .3rem .7rem;
+
+  text-align:
+    center;
+
+  background:
+    var(--neni-wine);
+
+  color:
+    white;
+
+  border-radius:
+    999px;
+}
+
+.cart-summary__empty {
+  margin-bottom:
+    0;
+
+  opacity:
+    .7;
+}
+
+.cart-summary__error {
+  color:
+    var(--neni-wine);
+}
+
+.cart-summary__items {
+  margin-top:
+    1rem;
+
+  display:
+    grid;
+
+  gap:
+    .8rem;
+}
+
+.cart-item {
+  padding:
+    .9rem 0;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    1rem;
+
+  border-bottom:
+    1px solid rgba(0, 0, 0, .08);
+}
+
+.cart-item small {
+  display:
+    block;
+
+  margin-top:
+    .3rem;
+}
+
+.cart-item__quantity {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    .55rem;
+}
+
+.cart-item__quantity button {
+  width:
+    2rem;
+
+  height:
+    2rem;
+
+  border:
+    0;
+
+  border-radius:
+    999px;
+
+  cursor:
+    pointer;
+}
+
+.cart-item__remove {
+  background:
+    transparent;
+
+  color:
+    var(--neni-wine);
+
+  font-size:
+    1.2rem;
+}
+
+.cart-summary__total {
+  padding-top:
+    1.2rem;
+
+  display:
+    flex;
+
+  justify-content:
+    space-between;
+
+  font-size:
+    1.1rem;
+}
+
+.product-card button:disabled,
+.cart-item button:disabled {
+  cursor:
+    wait;
+
+  opacity:
+    .55;
+}
+

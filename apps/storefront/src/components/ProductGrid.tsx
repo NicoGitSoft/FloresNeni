@@ -7,19 +7,21 @@ import {
   formatCLP,
   getProductImage,
   getProductPrice,
+  getProductVariantId,
   getProducts,
   type MedusaProduct,
 } from "../lib/medusa"
 
+import {
+  useCart,
+} from "./CartContext"
 
 export default function ProductGrid() {
-
   const [
     products,
     setProducts,
   ] =
     useState<MedusaProduct[]>([])
-
 
   const [
     loading,
@@ -27,27 +29,27 @@ export default function ProductGrid() {
   ] =
     useState(true)
 
-
   const [
     error,
     setError,
   ] =
     useState<string | null>(null)
 
+  const {
+    addItem,
+    busy,
+  } =
+    useCart()
 
   useEffect(() => {
-
     async function loadProducts() {
-
       try {
-
         const result =
           await getProducts()
 
         setProducts(result)
 
       } catch (err) {
-
         console.error(err)
 
         setError(
@@ -57,20 +59,14 @@ export default function ProductGrid() {
         )
 
       } finally {
-
         setLoading(false)
-
       }
     }
 
-
     loadProducts()
-
   }, [])
 
-
   if (loading) {
-
     return (
       <p>
         Cargando flores...
@@ -78,9 +74,7 @@ export default function ProductGrid() {
     )
   }
 
-
   if (error) {
-
     return (
       <p>
         No pudimos cargar el catálogo.
@@ -88,113 +82,118 @@ export default function ProductGrid() {
     )
   }
 
-
   return (
-
     <div className="products-grid">
 
-      {
-        products.map(
-          product => {
+      {products.map(
+        product => {
 
-            const image =
-              getProductImage(
-                product
-              )
+          const image =
+            getProductImage(
+              product
+            )
 
-            const price =
-              getProductPrice(
-                product
-              )
+          const price =
+            getProductPrice(
+              product
+            )
 
+          const variantId =
+            getProductVariantId(
+              product
+            )
 
-            return (
+          return (
+            <article
+              className="product-card"
+              key={product.id}
+              data-product-handle={
+                product.handle
+              }
+            >
 
-              <article
-                className="product-card"
-                key={product.id}
-              >
+              {image && (
+                <img
+                  src={image}
+                  alt={product.title}
+                  loading="lazy"
+                />
+              )}
+
+              <div className="product-card__content">
+
+                <h3>
+                  {product.title}
+                </h3>
 
                 {
-                  image && (
+                  product
+                    .metadata
+                    ?.composition &&
+                  (
+                    <p className="composition">
 
-                    <img
-                      src={image}
-                      alt={product.title}
-                      loading="lazy"
-                    />
+                      {
+                        product
+                          .metadata
+                          .composition
+                      }
 
+                    </p>
                   )
                 }
 
+                {
+                  product.description &&
+                  (
+                    <p>
+                      {
+                        product
+                          .description
+                      }
+                    </p>
+                  )
+                }
 
-                <div className="product-card__content">
-
-                  <h3>
-                    {product.title}
-                  </h3>
-
-
+                <strong>
                   {
-                    product
-                      .metadata
-                      ?.composition && (
-
-                      <p className="composition">
-
-                        {
-                          product
-                            .metadata
-                            .composition
-                        }
-
-                      </p>
-
+                    formatCLP(
+                      price
                     )
                   }
+                </strong>
 
-
-                  {
-                    product.description && (
-
-                      <p>
-                        {
-                          product
-                            .description
-                        }
-                      </p>
-
-                    )
+                <button
+                  type="button"
+                  disabled={
+                    !variantId ||
+                    busy
                   }
-
-
-                  <strong>
-
-                    {
-                      formatCLP(
-                        price
+                  onClick={() => {
+                    if (
+                      variantId
+                    ) {
+                      void addItem(
+                        variantId,
+                        1
                       )
                     }
+                  }}
+                >
+                  {
+                    busy
+                      ? "Actualizando..."
+                      : "Agregar al carrito"
+                  }
+                </button>
 
-                  </strong>
+              </div>
 
-
-                  <button
-                    type="button"
-                  >
-                    Quiero este ramo
-                  </button>
-
-                </div>
-
-              </article>
-
-            )
-          }
-        )
-      }
+            </article>
+          )
+        }
+      )}
 
     </div>
-
   )
 }
