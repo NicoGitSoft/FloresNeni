@@ -1,16 +1,187 @@
 ---
+import ProductGrid from "../components/ProductGrid"
+import "../styles/storefront.css"
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<!doctype html>
+
+<html lang="es">
+
+  <head>
+
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+
+    <meta
+      name="description"
+      content="Neni — Taller de Flores. Diseños florales hechos en Santiago."
+    />
+
+    <title>
+      Neni — Taller de Flores
+    </title>
+
+  </head>
+
+
+  <body>
+
+    <header class="site-header">
+
+      <a
+        class="brand"
+        href="/"
+        aria-label="Neni Taller de Flores"
+      >
+
+        <img
+          src="/images/Logos/Neni_transparente_vino.png"
+          alt="Neni Taller de Flores"
+        />
+
+      </a>
+
+
+      <nav class="navigation">
+
+        <a href="#flores">
+          Flores
+        </a>
+
+        <a href="#neni">
+          Diseño Neni
+        </a>
+
+        <a href="#contacto">
+          Contacto
+        </a>
+
+      </nav>
+
+    </header>
+
+
+    <main>
+
+      <section class="hero">
+
+        <div class="hero__eyebrow">
+          Taller de flores · Santiago
+        </div>
+
+
+        <h1>
+
+          Flores para decir
+
+          <em>
+            lo que a veces cuesta decir.
+          </em>
+
+        </h1>
+
+
+        <p>
+
+          Diseños hechos a mano,
+          flores elegidas con intención
+          y composiciones que cambian
+          con cada temporada.
+
+        </p>
+
+
+        <a
+          class="hero__action"
+          href="#flores"
+        >
+          Ver flores
+        </a>
+
+      </section>
+
+
+      <section
+        class="catalog"
+        id="flores"
+      >
+
+        <header class="section-heading">
+
+          <span>
+            Diseños Neni
+          </span>
+
+
+          <h2>
+            Flores del taller
+          </h2>
+
+
+          <p>
+            El catálogo se carga directamente
+            desde nuestro taller.
+          </p>
+
+        </header>
+
+
+        <ProductGrid client:load />
+
+      </section>
+
+
+      <section
+        class="neni-section"
+        id="neni"
+      >
+
+        <span>
+          Diseño Neni
+        </span>
+
+
+        <h2>
+          Cuéntanos la ocasión.
+          Nosotros hacemos el resto.
+        </h2>
+
+
+        <p>
+
+          Puedes contarnos tu presupuesto,
+          colores o intención y Neni diseña
+          una composición especialmente
+          para ese momento.
+
+        </p>
+
+      </section>
+
+    </main>
+
+
+    <footer
+      class="footer"
+      id="contacto"
+    >
+
+      <img
+        src="/images/Logos/Neni_transparente_grafito.png"
+        alt="Neni"
+      />
+
+
+      <p>
+        Tu contacto de emergencia floral.
+      </p>
+
+    </footer>
+
+  </body>
+
 </html>
