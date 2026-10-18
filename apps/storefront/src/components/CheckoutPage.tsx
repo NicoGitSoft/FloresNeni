@@ -51,7 +51,7 @@ function fieldsFromCart(cart: MedusaCart): CheckoutFields {
     email: cart.email ?? "",
     phone: saved?.phone ?? address?.phone ?? "",
     fulfillment_method: saved?.fulfillment_method ?? "pickup",
-    requested_date: saved?.requested_date ?? getChileTodayForDateInput(),
+    requested_date: saved?.requested_date ?? "",
     address_1: address?.address_1 ?? "",
     address_2: address?.address_2 ?? "",
     city: address?.city ?? "",
@@ -325,7 +325,7 @@ function CheckoutForm() {
           )}
 
           <button className="checkout-submit" disabled={saving} type="submit">
-            {saving ? "Guardando tus datos..." : "Guardar datos y continuar"}
+            {saving ? "Guardando tus datos..." : "Guardar datos"}
           </button>
         </form>
 

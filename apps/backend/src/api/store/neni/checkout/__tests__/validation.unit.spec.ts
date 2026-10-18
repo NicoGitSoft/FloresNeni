@@ -59,6 +59,28 @@ describe("Neni checkout input validation", () => {
     )
   })
 
+  it("rejects a cart outside the publishable key sales-channel scope", () => {
+    expect(() =>
+      validateCheckoutInput(pickupCheckout, {
+        hasItems: true,
+        today,
+        cartSalesChannelId: "sc_other",
+        allowedSalesChannelIds: ["sc_neni"],
+      })
+    ).toThrow("canal de venta autorizado")
+  })
+
+  it("accepts a cart inside the publishable key sales-channel scope", () => {
+    expect(
+      validateCheckoutInput(pickupCheckout, {
+        hasItems: true,
+        today,
+        cartSalesChannelId: "sc_neni",
+        allowedSalesChannelIds: ["sc_neni"],
+      }).fulfillment_method
+    ).toBe("pickup")
+  })
+
   it("allows pickup without a shipping address", () => {
     expect(validate(pickupCheckout).fulfillment_method).toBe("pickup")
   })

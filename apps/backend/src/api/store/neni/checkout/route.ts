@@ -1,6 +1,6 @@
 import type {
-  MedusaRequest,
   MedusaResponse,
+  MedusaStoreRequest,
 } from "@medusajs/framework/http"
 import type { CreateAddressDTO } from "@medusajs/framework/types"
 import {
@@ -17,7 +17,7 @@ import {
 } from "./validation"
 
 export async function POST(
-  req: MedusaRequest<CheckoutRequest>,
+  req: MedusaStoreRequest<CheckoutRequest>,
   res: MedusaResponse
 ) {
   const cartService = req.scope.resolve(Modules.CART)
@@ -27,6 +27,8 @@ export async function POST(
   const checkout = validateCheckoutInput(req.validatedBody, {
     hasItems: Boolean(cart.items?.length),
     today: getChileCivilDate(),
+    cartSalesChannelId: cart.sales_channel_id,
+    allowedSalesChannelIds: req.publishable_key_context.sales_channel_ids,
   })
 
   if (!cart.region_id) {
@@ -79,7 +81,6 @@ export async function POST(
       email: checkout.email,
       shipping_address: shippingAddress,
       metadata: {
-        ...(cart.metadata ?? {}),
         neni_checkout: {
           fulfillment_method: checkout.fulfillment_method,
           requested_date: checkout.requested_date,

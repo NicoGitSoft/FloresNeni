@@ -54,7 +54,12 @@ function isValidCivilDate(value: string): boolean {
 
 export function validateCheckoutInput(
   input: unknown,
-  options: { hasItems: boolean; today?: string }
+  options: {
+    hasItems: boolean
+    today?: string
+    cartSalesChannelId?: string | null
+    allowedSalesChannelIds?: string[]
+  }
 ): CheckoutRequest {
   const parsed = checkoutRequestSchema.safeParse(input)
 
@@ -69,6 +74,19 @@ export function validateCheckoutInput(
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
       "Agrega un producto al carrito antes de continuar."
+    )
+  }
+
+  if (
+    options.allowedSalesChannelIds &&
+    (
+      !options.cartSalesChannelId ||
+      !options.allowedSalesChannelIds.includes(options.cartSalesChannelId)
+    )
+  ) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_ALLOWED,
+      "El carrito no pertenece al canal de venta autorizado."
     )
   }
 
