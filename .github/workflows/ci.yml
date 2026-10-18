@@ -77,8 +77,13 @@ jobs:
           pnpm --filter @dtc/backend exec medusa db:migrate
           pnpm neni:bootstrap
           pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-neni-bootstrap.ts
+          NENI_INVENTORY_DEMO_EXPECT=absent pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-inventory-bom-demo.ts
+          pnpm neni:bootstrap:inventory-demo
+          pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-inventory-bom-demo.ts
           pnpm neni:bootstrap
           pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-neni-bootstrap.ts
+          pnpm neni:bootstrap:inventory-demo
+          pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-inventory-bom-demo.ts
 
       - name: Check PR diff formatting
         run: |
@@ -90,6 +95,9 @@ jobs:
 
       - name: Run checkout unit tests
         run: pnpm neni:test:checkout
+
+      - name: Run inventory and BOM unit tests
+        run: pnpm neni:test:inventory
 
       - name: Run Neni checks
         run: pnpm neni:check

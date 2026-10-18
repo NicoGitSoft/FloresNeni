@@ -336,17 +336,22 @@ Para una tarea sustancial:
 
 ## Fase 10 — Inventario y recetas
 
-- [ ] Stock Location `Taller Neni`.
-- [ ] Materias primas como inventory items.
-- [ ] Stock físico.
+- [x] Reutilizar Stock Location `Taller Neni` existente.
+- [x] `pnpm neni:bootstrap` no crea fixtures; `pnpm neni:bootstrap:inventory-demo` crea cuatro Inventory Items/Levels sintéticos DEMO con SKU, unidad y categoría nativa.
+- [x] Persistir la composición fixture en una variante `DRAFT` como Inventory Kit nativo.
+- [x] Exponer API Store de lectura solo para la variante fixture DEMO y cálculo `material_buildable_quantity` usando `retrieveAvailableQuantity` de Medusa.
+- [x] Integrar tests y verificadores separados a CI: bootstrap base sin fixtures; CI ejecuta el comando DEMO explícito y comprueba SKUs/levels/links exactos y precios.
+- [ ] Ingresar materiales y stock reales de Denise.
+- [ ] Definir cantidades productivas confirmadas para las 11 variantes vendibles.
 - [ ] Reservado.
-- [ ] Stock útil.
+- [ ] Availability final que combine materiales, compras, calendario, capacidad y cupos.
 - [ ] Costos/proveedores.
-- [ ] Recetas/BOM.
-- [ ] Inventory Kits donde correspondan.
-- [ ] Componentes obligatorios.
-- [ ] Sustituciones.
+- [ ] Admin para edición de recetas y niveles.
+- [ ] Grupos de sustitución; los links de esta fase son requeridos y exactos.
 - [ ] Merma.
+
+El fixture está marcado como DEMO en SKU/metadata y vive en un producto `DRAFT` sin precio. No se asigna a los 11 productos reales ni cambia sus importes de venta.
+La Store API no devuelve cantidades de materiales reales. La futura lectura de recetas/stock reales será Admin-authenticated o una API interna de Production/Availability.
 
 ---
 
@@ -445,7 +450,8 @@ Sección `Neni Producción`:
 ## Fase 15 — Testing
 
 - [x] Unit tests de validación pura del Checkout Base.
-- [ ] Unit tests adicionales para reglas de inventario/producción.
+- [x] Unit tests de `material_buildable_quantity` para casos vacíos, inválidos, límite, cero, floor y aislamiento.
+- [x] Verificador de CI comprueba Inventory Items, niveles, links nativos y conservación de precios tras dos bootstrap.
 - [ ] Integration tests Medusa.
 - [ ] Tests de disponibilidad.
 - [ ] Tests de concurrencia.
