@@ -85,6 +85,28 @@ Para una tarea sustancial:
 13. CI + revisión de diff.
 14. Merge sólo cuando esté verde y aprobado.
 
+### Flux actual validado y operativo
+
+Entorno principal verificado en esta rama:
+- Ubuntu local 26.04 LTS
+- Node 22.22.1
+- pnpm 10.34.6
+- Docker/Compose funcionando
+- PostgreSQL 5433 y Redis 6380 activos
+- Astro 4321 y Medusa 9000 activos
+- `pnpm neni:setup` + `pnpm neni:dev` ejecutan un entorno Neni funcional
+
+Regla de bootstrap crítica:
+- `medusa db:migrate` crea/migra los índices físicos de búsqueda.
+- el index de búsqueda sólo queda activo después del seed/activation en arranque o reindex explícito.
+- el proceso de bootstrap debe verificar y activar el índice `product` antes de crear productos, porque los eventos `product.created` requieren un índice activo.
+
+### Reglas de Dev Container
+
+- Versionar `.devcontainer/devcontainer-lock.json` para fijar la versión, el digest resuelto y la integridad de cada Feature.
+- Regenerar y revisar el lockfile cuando cambien las Features o sus referencias en `devcontainer.json`.
+- El lockfile complementa `devcontainer.json`, `package.json`, `pnpm-lock.yaml` y `scripts/neni-setup.sh`; no sustituye esos archivos.
+
 ### Regla corta
 
 ```text
@@ -215,7 +237,8 @@ Luego:
 - [x] GitHub Actions completó exitosamente el workflow CI del PR #2.
 - [ ] Unit tests relevantes.
 - [ ] Integration tests posteriores con PostgreSQL/Redis.
-- [x] Hacer que CI y `pnpm neni:check` compartan las mismas validaciones configuradas.
+- [x] `pnpm neni:check` comparte con CI los checks estáticos/build principales; CI añade además el smoke de bootstrap limpio con PostgreSQL/Redis.
+- [x] Añadir smoke de bootstrap en PostgreSQL/Redis efímeros: migración, dos ejecuciones y conteos oficiales de Medusa para catálogo y recursos Neni.
 - [ ] Añadir dependency scanning / CodeQL cuando el baseline esté estable.
 
 ---

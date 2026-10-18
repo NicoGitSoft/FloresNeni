@@ -6,6 +6,23 @@ cd "$ROOT"
 
 say() { printf "\n🌸 %s\n" "$1"; }
 
+upsert_env_var() {
+  local file="$1"
+  local key="$2"
+  local value="$3"
+
+  mkdir -p "$(dirname "$file")"
+  touch "$file"
+
+  if grep -Eq "^${key}=" "$file"; then
+    sed -i -E "s|^${key}=.*$|${key}=${value}|" "$file"
+  else
+    printf '%s=%s\n' "$key" "$value" >> "$file"
+  fi
+
+  chmod 600 "$file"
+}
+
 command -v pnpm >/dev/null || { echo "pnpm no está disponible"; exit 1; }
 command -v docker >/dev/null || { echo "Docker no está disponible"; exit 1; }
 command -v openssl >/dev/null || { echo "openssl no está disponible"; exit 1; }
@@ -51,12 +68,38 @@ EOF
   chmod 600 apps/backend/.env
 fi
 
+if [ -f apps/backend/.env ]; then
+  upsert_env_var "apps/backend/.env" "DATABASE_URL" "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5433/${POSTGRES_DB}"
+  upsert_env_var "apps/backend/.env" "REDIS_URL" "redis://127.0.0.1:6380"
+  upsert_env_var "apps/backend/.env" "STORE_CORS" "http://localhost:4321,http://127.0.0.1:4321,${STOREFRONT_ORIGIN}"
+  upsert_env_var "apps/backend/.env" "ADMIN_CORS" "http://localhost:9000,http://127.0.0.1:9000,${BACKEND_ORIGIN}"
+  upsert_env_var "apps/backend/.env" "AUTH_CORS" "http://localhost:4321,http://127.0.0.1:4321,http://localhost:9000,http://127.0.0.1:9000,${STOREFRONT_ORIGIN},${BACKEND_ORIGIN}"
+  if ! grep -Eq '^JWT_SECRET=' apps/backend/.env; then
+    upsert_env_var "apps/backend/.env" "JWT_SECRET" "$(openssl rand -hex 32)"
+  fi
+  if ! grep -Eq '^COOKIE_SECRET=' apps/backend/.env; then
+    upsert_env_var "apps/backend/.env" "COOKIE_SECRET" "$(openssl rand -hex 32)"
+  fi
+fi
+
 if [ ! -f apps/storefront/.env ]; then
   cat > apps/storefront/.env <<EOF
 PUBLIC_MEDUSA_BACKEND_URL=${BACKEND_ORIGIN}
 PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NENI_STORE_PUBLISHABLE_KEY:-}
 EOF
   chmod 600 apps/storefront/.env
+fi
+
+if [ -f apps/storefront/.env ]; then
+  upsert_env_var "apps/storefront/.env" "PUBLIC_MEDUSA_BACKEND_URL" "${BACKEND_ORIGIN}"
+  if ! grep -Eq '^PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_' apps/storefront/.env; then
+    existing_publishable="$(grep -E '^PUBLIC_MEDUSA_PUBLISHABLE_KEY=' apps/storefront/.env | cut -d= -f2- || true)"
+    if [ -n "${NENI_STORE_PUBLISHABLE_KEY:-}" ] && [ "${NENI_STORE_PUBLISHABLE_KEY:-}" != "" ]; then
+      upsert_env_var "apps/storefront/.env" "PUBLIC_MEDUSA_PUBLISHABLE_KEY" "${NENI_STORE_PUBLISHABLE_KEY}"
+    elif [ -n "$existing_publishable" ] && [ "$existing_publishable" != "" ]; then
+      :
+    fi
+  fi
 fi
 
 say "Levantando PostgreSQL y Redis"

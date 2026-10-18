@@ -13,6 +13,29 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: neni
+          POSTGRES_USER: neni
+          POSTGRES_PASSWORD: neni
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U neni -d neni"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       DATABASE_URL: postgres://neni:neni@localhost:5432/neni
       REDIS_URL: redis://localhost:6379
@@ -48,6 +71,14 @@ jobs:
 
       - name: Install frozen lockfile
         run: pnpm install --frozen-lockfile
+
+      - name: Smoke test clean bootstrap twice
+        run: |
+          pnpm --filter @dtc/backend exec medusa db:migrate
+          pnpm neni:bootstrap
+          pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-neni-bootstrap.ts
+          pnpm neni:bootstrap
+          pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-neni-bootstrap.ts
 
       - name: Check PR diff formatting
         run: |
