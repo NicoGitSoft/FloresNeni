@@ -11,12 +11,13 @@
     "start": "turbo start",
     "lint": "turbo lint",
     "test": "turbo test",
-    "backend:seed": "turbo seed --filter=@dtc/backend",
+    "backend:seed": "pnpm neni:bootstrap",
     "backend:dev": "turbo dev --filter=@dtc/backend",
-    "storefront:dev": "turbo dev --filter=@dtc/storefront",
-    "catalog:seed": "pnpm --filter @dtc/backend exec medusa exec ./src/scripts/seed-catalogo-neni.ts",
+    "storefront:dev": "turbo dev --filter=@neni/storefront",
+    "catalog:seed": "pnpm neni:bootstrap",
+    "neni:bootstrap": "pnpm --filter @dtc/backend exec medusa exec ./src/scripts/prepare-search-indexes.ts && pnpm --filter @dtc/backend exec medusa exec ./src/scripts/seed-catalogo-neni.ts",
     "neni:setup": "bash scripts/neni-setup.sh",
-    "neni:dev": "pnpm -r --parallel --stream dev",
+    "neni:dev": "pnpm --filter @dtc/backend --filter @neni/storefront --parallel --stream dev",
     "neni:check": "bash scripts/neni-check.sh"
   },
   "pnpm": {

@@ -6,6 +6,7 @@ Before making substantial changes, read:
 - `.github/copilot-instructions.md`
 - `docs/NENI_PRODUCTION_LOGIC.md`
 - `docs/IMPLEMENTATION_ROADMAP.md`
+- `docs/AI_DEVELOPMENT_WORKFLOW.md`
 
 Active development branch: `v2`.
 
