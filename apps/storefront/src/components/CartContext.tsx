@@ -29,6 +29,9 @@ type CartContextValue = {
 
   itemCount: number
 
+  refreshCart: () => Promise<MedusaCart | null>
+  replaceCart: (cart: MedusaCart) => void
+
   addItem: (
     variantId: string,
     quantity?: number
@@ -238,6 +241,16 @@ export function CartProvider({
     }
   }
 
+  async function refreshCart(): Promise<MedusaCart | null> {
+    if (!cart) {
+      return null
+    }
+
+    const refreshed = await getCart(cart.id)
+    setCart(refreshed)
+    return refreshed
+  }
+
   const itemCount =
     useMemo(
       () =>
@@ -264,6 +277,8 @@ export function CartProvider({
         error,
 
         itemCount,
+        refreshCart,
+        replaceCart: setCart,
 
         addItem,
         updateItem,

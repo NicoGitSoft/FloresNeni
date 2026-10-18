@@ -167,6 +167,10 @@ function CartSummary() {
             </strong>
 
           </div>
+
+          <a className="cart-summary__checkout" href="/checkout">
+            Ir al checkout
+          </a>
         </>
 
       )}

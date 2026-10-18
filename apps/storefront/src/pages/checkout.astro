@@ -1,0 +1,25 @@
+---
+import CheckoutPage from "../components/CheckoutPage"
+import "../styles/storefront.css"
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Completa tus datos para continuar con tu pedido Neni." />
+    <title>Checkout | Neni — Taller de Flores</title>
+  </head>
+  <body>
+    <header class="site-header checkout-site-header">
+      <a class="brand" href="/" aria-label="Neni Taller de Flores">
+        <img src="/images/Logos/Neni_transparente_vino.png" alt="Neni Taller de Flores" />
+      </a>
+      <nav class="navigation" aria-label="Navegación principal">
+        <a href="/">Volver a la tienda</a>
+      </nav>
+    </header>
+    <CheckoutPage client:load />
+  </body>
+</html>

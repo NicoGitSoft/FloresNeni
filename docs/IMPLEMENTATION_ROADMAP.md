@@ -45,11 +45,13 @@ Para un entorno nuevo: `pnpm neni:setup`, luego `pnpm neni:dev`. Para volver a e
 - [x] ProductGrid dinámico
 - [x] Especificación de producción
 - [x] Carrito real
-- [ ] Checkout
+- [x] Checkout Base sin pagos: datos de contacto y retiro/despacho guardados en Cart vía Medusa.
+- [x] `requested_date` persistida como fecha solicitada, sin promesa de disponibilidad.
 - [ ] Inventario materias primas
 - [ ] Recetas
 - [ ] Production Module
 - [ ] Availability Engine
+- [ ] `promised_date`, reservas y concurrencia
 - [ ] Admin Denise
 - [ ] Webpay
 - [ ] Producción
@@ -74,13 +76,15 @@ Para un entorno nuevo: `pnpm neni:setup`, luego `pnpm neni:dev`. Para volver a e
 
 Sin pagos todavía.
 
-- datos cliente
-- dirección
-- retiro / despacho
-- email
-- teléfono
-- fecha solicitada
-- validación servidor
+- [x] Nombre y apellido
+- [x] Email nativo del Cart y teléfono
+- [x] Dirección Medusa requerida para despacho; retiro no inventa una dirección.
+- [x] Intención de retiro/despacho en metadata del Cart.
+- [x] `requested_date` persistida como solicitud, con validación de fecha civil en Chile.
+- [x] Validación server-side de Cart, contacto, método y dirección.
+- [x] Página `/checkout` con resumen Medusa, recuperación desde Cart y sin completar la orden.
+- [ ] Availability Engine y `promised_date` autoritativa.
+- [ ] Reservas/concurrencia y Webpay.
 
 ---
 
