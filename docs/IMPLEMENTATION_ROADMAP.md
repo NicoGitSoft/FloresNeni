@@ -23,7 +23,7 @@
 - [x] Store API conectada
 - [x] ProductGrid dinámico
 - [x] Especificación de producción
-- [ ] Carrito real
+- [x] Carrito real
 - [ ] Checkout
 - [ ] Inventario materias primas
 - [ ] Recetas
