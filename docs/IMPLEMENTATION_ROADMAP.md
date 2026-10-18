@@ -14,7 +14,7 @@
 - [x] La Publishable API Key queda vinculada a `Neni Web` y se escribe en el `.env` ignorado del storefront.
 - [x] Scripts raíz usan los package names actuales.
 - [x] Workflow CI configura pnpm 10.34.6 antes de Node 22.22.0 y ejecuta las validaciones.
-- [ ] Confirmar una ejecución exitosa de GitHub Actions antes de marcar CI como verde.
+- [x] GitHub Actions completó exitosamente el workflow CI del PR #2.
 - [ ] Rebuild del Codespace para activar/verificar Node 22.22.0.
 - [ ] Una DB ya inicializada con el seed demo conserva esos datos; no se borra ni migra automáticamente.
 
