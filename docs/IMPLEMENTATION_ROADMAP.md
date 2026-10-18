@@ -6,6 +6,21 @@
 
 ---
 
+## Developer Platform v1
+
+- [x] Codespaces fija Node 22.22.0 y conserva pnpm 10.34.6.
+- [x] `pnpm neni:setup` separa migraciones (`--skip-scripts`) del bootstrap de datos.
+- [x] `pnpm neni:bootstrap` provisiona recursos Neni y los 11 productos de forma idempotente.
+- [x] La Publishable API Key queda vinculada a `Neni Web` y se escribe en el `.env` ignorado del storefront.
+- [x] Scripts raíz usan los package names actuales.
+- [x] CI valida instalación frozen-lockfile, versiones, storefront, backend y `neni:check`.
+- [ ] Rebuild del Codespace para activar/verificar Node 22.22.0.
+- [ ] Una DB ya inicializada con el seed demo conserva esos datos; no se borra ni migra automáticamente.
+
+Para un entorno nuevo: `pnpm neni:setup`, luego `pnpm neni:dev`. Para volver a ejecutar solo los datos: `pnpm neni:bootstrap`.
+
+---
+
 ## Estado actual
 
 - [x] PostgreSQL

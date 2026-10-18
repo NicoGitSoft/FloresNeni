@@ -159,14 +159,14 @@ Luego:
 
 ## Fase 1 — Codespace reproducible
 
-- [ ] Corregir Node del Codespace: actualmente 22.16.0 y el repo exige >=22.22.0.
-- [ ] Fijar versión compatible en `.devcontainer/devcontainer.json`.
+- [x] Corregir Node del Codespace: el repo exige >=22.22.0.
+- [x] Fijar Node 22.22.0 en `.devcontainer/devcontainer.json`.
 - [x] pnpm fijado en 10.34.6.
 - [ ] Rebuild del dev container.
 - [ ] Verificar Docker-in-Docker.
 - [ ] Verificar PostgreSQL.
 - [ ] Verificar Redis.
-- [ ] `pnpm neni:setup` debe poder ejecutarse repetidamente sin romper datos.
+- [x] `pnpm neni:setup` aplica migraciones y luego el bootstrap idempotente sin borrar datos.
 - [ ] Objetivo de arranque:
   ```bash
   pnpm neni:setup
@@ -178,17 +178,17 @@ Luego:
 
 ## Fase 2 — Bootstrap real de Neni
 
-- [ ] Eliminar/aislar datos demo del starter Medusa en el bootstrap de desarrollo.
-- [ ] Crear automáticamente región Chile / CLP.
-- [ ] Crear Sales Channel `Neni Web`.
-- [ ] Crear Stock Location `Taller Neni`.
-- [ ] Crear fulfillment base de desarrollo.
-- [ ] Crear/reutilizar Publishable API Key.
-- [ ] Configurar automáticamente `PUBLIC_MEDUSA_PUBLISHABLE_KEY`.
-- [ ] Sembrar los 11 productos reales de Neni.
-- [ ] Hacer el catálogo seed idempotente.
-- [ ] Añadir `pnpm neni:bootstrap` si simplifica el flujo.
-- [ ] Una vez corregido el bootstrap, recrear una vez la DB de desarrollo limpia.
+- [x] Eliminar el seed demo del ciclo de migraciones de esquema.
+- [x] Crear/reutilizar región Chile / CLP.
+- [x] Crear/reutilizar Sales Channel `Neni Web`.
+- [x] Crear/reutilizar Stock Location `Taller Neni`.
+- [x] Crear/reutilizar fulfillment base de desarrollo.
+- [x] Crear/reutilizar Publishable API Key y vincularla al canal.
+- [x] Escribir `PUBLIC_MEDUSA_PUBLISHABLE_KEY` en `apps/storefront/.env`.
+- [x] Sembrar los 11 productos reales de Neni y vincularlos al canal.
+- [x] Hacer idempotente el bootstrap Neni.
+- [x] Añadir `pnpm neni:bootstrap`.
+- [ ] Limpiar una DB de desarrollo antigua que aún contenga datos demo; requiere aprobación explícita porque borra datos.
 - [ ] No usar borrado de DB como flujo normal.
 
 ---
@@ -208,18 +208,18 @@ Luego:
 
 ## Fase 4 — CI
 
-- [ ] Crear `.github/workflows/ci.yml`.
-- [ ] Trigger en PR hacia `v2`.
-- [ ] Node compatible.
-- [ ] pnpm 10.34.6.
-- [ ] `pnpm install --frozen-lockfile`.
-- [ ] `git diff --check`.
-- [ ] Storefront TypeScript.
-- [ ] Storefront build.
-- [ ] Backend build.
+- [x] Crear `.github/workflows/ci.yml`.
+- [x] Trigger en PR hacia `v2`.
+- [x] Node 22.22.0.
+- [x] pnpm 10.34.6.
+- [x] `pnpm install --frozen-lockfile`.
+- [x] `git diff --check`.
+- [x] Storefront TypeScript.
+- [x] Storefront build.
+- [x] Backend build.
 - [ ] Unit tests relevantes.
 - [ ] Integration tests posteriores con PostgreSQL/Redis.
-- [ ] Hacer que CI y `pnpm neni:check` compartan la misma verdad.
+- [x] Hacer que CI y `pnpm neni:check` compartan la misma verdad.
 - [ ] Añadir dependency scanning / CodeQL cuando el baseline esté estable.
 
 ---
@@ -240,7 +240,8 @@ Luego:
 
 ## Fase 6 — Higiene técnica inmediata
 
-- [ ] Corregir script raíz `storefront:dev` si apunta a un package incorrecto.
+- [x] Corregir script raíz `storefront:dev` para `@neni/storefront`.
+- [x] Corregir filtros de los comandos de desarrollo y bootstrap del workspace.
 - [ ] Revisar compatibilidad de versiones React / overrides del workspace.
 - [ ] Clasificar warnings Medusa en:
   - tolerables de desarrollo;

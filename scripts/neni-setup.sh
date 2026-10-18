@@ -9,6 +9,7 @@ say() { printf "\n🌸 %s\n" "$1"; }
 command -v pnpm >/dev/null || { echo "pnpm no está disponible"; exit 1; }
 command -v docker >/dev/null || { echo "Docker no está disponible"; exit 1; }
 command -v openssl >/dev/null || { echo "openssl no está disponible"; exit 1; }
+node -e 'const [major, minor] = process.versions.node.split(".").map(Number); if (major < 22 || (major === 22 && minor < 22)) { console.error(`Se requiere Node >=22.22.0 (actual: ${process.version})`); process.exit(1) }'
 
 if [ ! -f infra/dev/.env ]; then
   DB_PASSWORD="$(openssl rand -hex 18)"
@@ -74,18 +75,15 @@ docker compose -f infra/dev/compose.yaml --env-file infra/dev/.env exec -T postg
 say "Aplicando migraciones Medusa"
 (
   cd apps/backend
-  pnpm exec medusa db:migrate
+  pnpm exec medusa db:migrate --skip-scripts
 )
+
+say "Aplicando bootstrap de desarrollo Neni"
+pnpm neni:bootstrap
 
 say "Entorno base listo"
 echo "Backend:    $BACKEND_ORIGIN"
 echo "Storefront: $STOREFRONT_ORIGIN"
-
-if [ -z "${NENI_STORE_PUBLISHABLE_KEY:-}" ] && ! grep -Eq '^PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_' apps/storefront/.env; then
-  echo
-  echo "⚠ Falta la publishable API key del storefront."
-  echo "  El backend puede arrancar, pero el catálogo no cargará hasta configurarla."
-fi
 
 echo
 echo "Siguiente comando:"

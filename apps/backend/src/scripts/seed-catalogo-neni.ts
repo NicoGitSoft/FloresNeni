@@ -1,4 +1,6 @@
 import type { ExecArgs } from "@medusajs/framework/types"
+import { chmod, readFile, writeFile } from "node:fs/promises"
+import { resolve } from "node:path"
 
 import {
   ContainerRegistrationKeys,
@@ -7,7 +9,14 @@ import {
 } from "@medusajs/framework/utils"
 
 import {
+  createApiKeysWorkflow,
   createProductsWorkflow,
+  createRegionsWorkflow,
+  createSalesChannelsWorkflow,
+  createShippingOptionsWorkflow,
+  createStockLocationsWorkflow,
+  linkSalesChannelsToApiKeyWorkflow,
+  linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows"
 
 
@@ -233,6 +242,39 @@ const productos: ProductoNeni[] = [
 ]
 
 
+async function writeStorefrontPublishableKey(newToken?: string) {
+  const envPath = resolve(process.cwd(), "../storefront/.env")
+  let envContents = ""
+
+  try {
+    envContents = await readFile(envPath, "utf8")
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw error
+    }
+  }
+
+  const currentToken = envContents.match(/^PUBLIC_MEDUSA_PUBLISHABLE_KEY=(.*)$/m)?.[1]
+  const token =
+    newToken ?? (currentToken || process.env.NENI_STORE_PUBLISHABLE_KEY)
+
+  if (!token?.startsWith("pk_")) {
+    throw new Error(
+      "La publishable API key ya existe, pero no se puede recuperar en claro. " +
+        "Restaura apps/storefront/.env o revoca esa key desde Admin antes de crear otra."
+    )
+  }
+
+  const keyLine = `PUBLIC_MEDUSA_PUBLISHABLE_KEY=${token}`
+  envContents = /^PUBLIC_MEDUSA_PUBLISHABLE_KEY=.*$/m.test(envContents)
+    ? envContents.replace(/^PUBLIC_MEDUSA_PUBLISHABLE_KEY=.*$/m, keyLine)
+    : `${envContents.trimEnd()}${envContents.trim() ? "\n" : ""}${keyLine}\n`
+
+  await writeFile(envPath, envContents, { mode: 0o600 })
+  await chmod(envPath, 0o600)
+}
+
+
 export default async function seedCatalogoNeni({
   container,
 }: ExecArgs) {
@@ -257,75 +299,323 @@ export default async function seedCatalogoNeni({
       Modules.FULFILLMENT
     )
 
+  const stockLocationService =
+    container.resolve(
+      Modules.STOCK_LOCATION
+    )
 
-  /*
-   * SALES CHANNEL
-   */
+  const apiKeyService =
+    container.resolve(
+      Modules.API_KEY
+    )
 
-  let salesChannels =
+  const link =
+    container.resolve(
+      ContainerRegistrationKeys.LINK
+    )
+
+  const query =
+    container.resolve(
+      ContainerRegistrationKeys.QUERY
+    )
+
+  const hasRelation = async (
+    entity: string,
+    id: string,
+    relation: string,
+    relatedId: string
+  ) => {
+    const { data } = await query.graph({
+      entity,
+      fields: ["id", `${relation}.id`],
+      filters: { id },
+    })
+    const relatedRecords = data[0]?.[relation] as { id: string }[] | undefined
+    return relatedRecords?.some((record) => record.id === relatedId) ?? false
+  }
+
+
+  logger.info("Preparando recursos de desarrollo Neni...")
+
+  const { data: existingRegions } = await query.graph({
+    entity: "region",
+    fields: ["id", "name", "currency_code", "countries.iso_2"],
+  })
+
+  const existingChileRegion = existingRegions.find(
+    (candidate) => candidate.name === "Chile"
+  )
+
+  if (
+    existingChileRegion &&
+    (existingChileRegion.currency_code !== "clp" ||
+      !existingChileRegion.countries?.some((country) => country?.iso_2 === "cl"))
+  ) {
+    throw new Error(
+      'Ya existe una región "Chile" incompatible. Corrígela manualmente; el bootstrap no duplicará regiones.'
+    )
+  }
+
+  let region: { id: string; name: string; currency_code: string } | undefined =
+    existingChileRegion
+
+  if (!region) {
+    const { result } = await createRegionsWorkflow(container).run({
+      input: {
+        regions: [
+          {
+            name: "Chile",
+            currency_code: "clp",
+            countries: ["cl"],
+            payment_providers: ["pp_system_default"],
+          },
+        ],
+      },
+    })
+    region = {
+      id: result[0].id,
+      name: result[0].name,
+      currency_code: result[0].currency_code,
+    }
+  }
+
+  const salesChannels =
     await salesChannelService.listSalesChannels({
       name: "Neni Web",
     })
 
-
-  /*
-   * Durante esta primera fase permitimos
-   * utilizar el canal default.
-   */
-
-  if (!salesChannels.length) {
-
-    logger.warn(
-      'No existe "Neni Web". Usando el primer Sales Channel disponible.'
-    )
-
-    salesChannels =
-      await salesChannelService.listSalesChannels()
-  }
-
-
-  const salesChannel =
-    salesChannels[0]
-
+  let salesChannel = salesChannels[0]
 
   if (!salesChannel) {
-
-    throw new Error(
-      "No existe ningún Sales Channel."
-    )
+    const { result } = await createSalesChannelsWorkflow(container).run({
+      input: {
+        salesChannelsData: [
+          {
+            name: "Neni Web",
+            description: "Canal de ventas de la tienda Neni.",
+          },
+        ],
+      },
+    })
+    salesChannel = result[0]
   }
 
+  const stockLocations =
+    await stockLocationService.listStockLocations({
+      name: "Taller Neni",
+    })
 
-  /*
-   * SHIPPING PROFILE
-   */
+  let stockLocation = stockLocations[0]
+
+  if (!stockLocation) {
+    const { result } = await createStockLocationsWorkflow(container).run({
+      input: {
+        locations: [
+          {
+            name: "Taller Neni",
+            address: {
+              city: "Santiago",
+              country_code: "CL",
+              address_1: "",
+            },
+          },
+        ],
+      },
+    })
+    stockLocation = result[0]
+  }
+
+  if (
+    !(await hasRelation(
+      "stock_location",
+      stockLocation.id,
+      "sales_channels",
+      salesChannel.id
+    ))
+  ) {
+    await linkSalesChannelsToStockLocationWorkflow(container).run({
+      input: {
+        id: stockLocation.id,
+        add: [salesChannel.id],
+      },
+    })
+  }
+
+  const { data: existingFulfillmentSets } = await query.graph({
+    entity: "fulfillment_set",
+    fields: ["id", "name"],
+    filters: { name: "Taller Neni" },
+  })
+
+  let fulfillmentSet: { id: string } | undefined = existingFulfillmentSets[0]
+
+  if (!fulfillmentSet) {
+    const createdFulfillmentSet = await fulfillmentService.createFulfillmentSets({
+      name: "Taller Neni",
+      type: "shipping",
+      service_zones: [
+        {
+          name: "Chile",
+          geo_zones: [
+            {
+              country_code: "cl",
+              type: "country",
+            },
+          ],
+        },
+      ],
+    })
+    fulfillmentSet = { id: createdFulfillmentSet.id }
+  }
+
+  if (
+    !(await hasRelation(
+      "stock_location",
+      stockLocation.id,
+      "fulfillment_sets",
+      fulfillmentSet.id
+    ))
+  ) {
+    await link.create({
+      [Modules.STOCK_LOCATION]: {
+        stock_location_id: stockLocation.id,
+      },
+      [Modules.FULFILLMENT]: {
+        fulfillment_set_id: fulfillmentSet.id,
+      },
+    })
+  }
+
+  if (
+    !(await hasRelation(
+      "stock_location",
+      stockLocation.id,
+      "fulfillment_providers",
+      "manual_manual"
+    ))
+  ) {
+    await link.create({
+      [Modules.STOCK_LOCATION]: {
+        stock_location_id: stockLocation.id,
+      },
+      [Modules.FULFILLMENT]: {
+        fulfillment_provider_id: "manual_manual",
+      },
+    })
+  }
+
+  const apiKeys =
+    await apiKeyService.listApiKeys({
+      title: "Neni Web Storefront",
+      type: "publishable",
+    })
+
+  let apiKey = apiKeys[0]
+
+  if (!apiKey) {
+    const { result } = await createApiKeysWorkflow(container).run({
+      input: {
+        api_keys: [
+          {
+            title: "Neni Web Storefront",
+            type: "publishable",
+            created_by: "",
+          },
+        ],
+      },
+    })
+    apiKey = result[0]
+  }
+
+  if (
+    !(await hasRelation(
+      "api_key",
+      apiKey.id,
+      "sales_channels",
+      salesChannel.id
+    ))
+  ) {
+    await linkSalesChannelsToApiKeyWorkflow(container).run({
+      input: {
+        id: apiKey.id,
+        add: [salesChannel.id],
+      },
+    })
+  }
+
+  await writeStorefrontPublishableKey(
+    apiKey.token?.startsWith("pk_") ? apiKey.token : undefined
+  )
 
   const shippingProfiles =
     await fulfillmentService.listShippingProfiles({
       type: "default",
     })
 
-
-  const shippingProfile =
-    shippingProfiles[0]
-
+  const shippingProfile = shippingProfiles[0]
 
   if (!shippingProfile) {
-
-    throw new Error(
-      "No existe Shipping Profile default."
-    )
+    throw new Error("No existe Shipping Profile default.")
   }
 
+  const { data: [fulfillmentSetData] } = await query.graph({
+    entity: "fulfillment_set",
+    fields: ["id", "service_zones.id"],
+    filters: { id: fulfillmentSet.id },
+  })
 
-  logger.info(
-    `Sales Channel: ${salesChannel.name}`
-  )
+  const serviceZone = fulfillmentSetData?.service_zones?.[0]
 
-  logger.info(
-    `Shipping Profile: ${shippingProfile.name}`
-  )
+  if (!serviceZone) {
+    throw new Error("El fulfillment set Neni no tiene una zona de servicio.")
+  }
 
+  const shippingOptions =
+    await fulfillmentService.listShippingOptions({
+      name: "Despacho Neni (desarrollo)",
+    })
+
+  if (!shippingOptions.length) {
+    await createShippingOptionsWorkflow(container).run({
+      input: [
+        {
+          name: "Despacho Neni (desarrollo)",
+          price_type: "flat",
+          provider_id: "manual_manual",
+          service_zone_id: serviceZone.id,
+          shipping_profile_id: shippingProfile.id,
+          type: {
+            label: "Standard",
+            description: "Opción de fulfillment manual para desarrollo.",
+            code: "standard",
+          },
+          prices: [
+            {
+              region_id: region.id,
+              amount: 0,
+            },
+          ],
+          rules: [
+            {
+              attribute: "enabled_in_store",
+              value: "true",
+              operator: "eq",
+            },
+            {
+              attribute: "is_return",
+              value: "false",
+              operator: "eq",
+            },
+          ],
+        },
+      ],
+    })
+  }
+
+  logger.info(`Región: ${region.name} (${region.currency_code.toUpperCase()})`)
+  logger.info(`Sales Channel: ${salesChannel.name}`)
+  logger.info(`Stock Location: ${stockLocation.name}`)
+  logger.info(`Publishable API Key: ${apiKey.title}`)
 
   /*
    * PRODUCTS
@@ -344,6 +634,25 @@ export default async function seedCatalogoNeni({
       logger.info(
         `⏭ ${producto.name}: ya existe`
       )
+
+      const existingProduct = existentes[0]
+      if (
+        !(await hasRelation(
+          "product",
+          existingProduct.id,
+          "sales_channels",
+          salesChannel.id
+        ))
+      ) {
+        await link.create({
+          [Modules.PRODUCT]: {
+            product_id: existingProduct.id,
+          },
+          [Modules.SALES_CHANNEL]: {
+            sales_channel_id: salesChannel.id,
+          },
+        })
+      }
 
       continue
     }

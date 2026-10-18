@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [v2]
+  pull_request:
+    branches: [v2]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgres://neni:neni@localhost:5432/neni
+      REDIS_URL: redis://localhost:6379
+      STORE_CORS: http://localhost:4321
+      ADMIN_CORS: http://localhost:9000
+      AUTH_CORS: http://localhost:4321,http://localhost:9000
+      JWT_SECRET: ci-only-jwt-secret-not-for-production
+      COOKIE_SECRET: ci-only-cookie-secret-not-for-production
+      PUBLIC_MEDUSA_BACKEND_URL: http://localhost:9000
+      PUBLIC_MEDUSA_PUBLISHABLE_KEY: pk_ci_placeholder
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Activate pnpm 10.34.6
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.34.6 --activate
+          node --version
+          pnpm --version
+          node -e 'const [major, minor] = process.versions.node.split(".").map(Number); if (major < 22 || (major === 22 && minor < 22)) process.exit(1)'
+          test "$(pnpm --version)" = "10.34.6"
+
+      - name: Install frozen lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Check PR diff formatting
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            git diff --check "origin/${GITHUB_BASE_REF}...HEAD"
+          else
+            git diff --check "HEAD^" HEAD
+          fi
+
+      - name: Run Neni checks
+        run: pnpm neni:check
