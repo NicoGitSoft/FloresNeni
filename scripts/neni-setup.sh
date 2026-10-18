@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+say() { printf "\n🌸 %s\n" "$1"; }
+
+command -v pnpm >/dev/null || { echo "pnpm no está disponible"; exit 1; }
+command -v docker >/dev/null || { echo "Docker no está disponible"; exit 1; }
+command -v openssl >/dev/null || { echo "openssl no está disponible"; exit 1; }
+
+if [ ! -f infra/dev/.env ]; then
+  DB_PASSWORD="$(openssl rand -hex 18)"
+  cat > infra/dev/.env <<EOF
+POSTGRES_DB=neni
+POSTGRES_USER=neni
+POSTGRES_PASSWORD=$DB_PASSWORD
+EOF
+  chmod 600 infra/dev/.env
+fi
+
+set -a
+# shellcheck disable=SC1091
+source infra/dev/.env
+set +a
+
+if [ "${CODESPACES:-false}" = "true" ]; then
+  FORWARD_DOMAIN="${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+  STOREFRONT_ORIGIN="https://${CODESPACE_NAME}-4321.${FORWARD_DOMAIN}"
+  BACKEND_ORIGIN="https://${CODESPACE_NAME}-9000.${FORWARD_DOMAIN}"
+else
+  STOREFRONT_ORIGIN="http://localhost:4321"
+  BACKEND_ORIGIN="http://localhost:9000"
+fi
+
+if [ ! -f apps/backend/.env ]; then
+  JWT_SECRET="$(openssl rand -hex 32)"
+  COOKIE_SECRET="$(openssl rand -hex 32)"
+
+  cat > apps/backend/.env <<EOF
+DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5433/${POSTGRES_DB}
+REDIS_URL=redis://127.0.0.1:6380
+STORE_CORS=http://localhost:4321,http://127.0.0.1:4321,${STOREFRONT_ORIGIN}
+ADMIN_CORS=http://localhost:9000,http://127.0.0.1:9000,${BACKEND_ORIGIN}
+AUTH_CORS=http://localhost:4321,http://127.0.0.1:4321,http://localhost:9000,http://127.0.0.1:9000,${STOREFRONT_ORIGIN},${BACKEND_ORIGIN}
+JWT_SECRET=${JWT_SECRET}
+COOKIE_SECRET=${COOKIE_SECRET}
+EOF
+  chmod 600 apps/backend/.env
+fi
+
+if [ ! -f apps/storefront/.env ]; then
+  cat > apps/storefront/.env <<EOF
+PUBLIC_MEDUSA_BACKEND_URL=${BACKEND_ORIGIN}
+PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NENI_STORE_PUBLISHABLE_KEY:-}
+EOF
+  chmod 600 apps/storefront/.env
+fi
+
+say "Levantando PostgreSQL y Redis"
+docker compose -f infra/dev/compose.yaml --env-file infra/dev/.env up -d
+
+say "Esperando PostgreSQL"
+for _ in $(seq 1 30); do
+  if docker compose -f infra/dev/compose.yaml --env-file infra/dev/.env exec -T postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+docker compose -f infra/dev/compose.yaml --env-file infra/dev/.env exec -T postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null
+
+say "Aplicando migraciones Medusa"
+(
+  cd apps/backend
+  pnpm exec medusa db:migrate
+)
+
+say "Entorno base listo"
+echo "Backend:    $BACKEND_ORIGIN"
+echo "Storefront: $STOREFRONT_ORIGIN"
+
+if [ -z "${NENI_STORE_PUBLISHABLE_KEY:-}" ] && ! grep -Eq '^PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_' apps/storefront/.env; then
+  echo
+  echo "⚠ Falta la publishable API key del storefront."
+  echo "  El backend puede arrancar, pero el catálogo no cargará hasta configurarla."
+fi
+
+echo
+echo "Siguiente comando:"
+echo "  pnpm neni:dev"
