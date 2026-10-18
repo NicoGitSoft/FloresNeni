@@ -19,7 +19,7 @@
 - [x] El bootstrap ahora valida el estado del índice antes de crear productos y usa Medusa’s official search reindex flow cuando es necesario.
 - [x] `.devcontainer/devcontainer-lock.json` se versiona para fijar versiones, digests e integridad de las Features de Dev Containers.
 - [x] Smoke test de bootstrap limpio con PostgreSQL/Redis efímeros, dos ejecuciones y conteos exactos está implementado en CI.
-- [ ] Primera ejecución remota del workflow CI actualizado pendiente.
+- [x] GitHub Actions ejecutó exitosamente el workflow CI actualizado con el smoke de bootstrap limpio.
 - [ ] Rebuild del Codespace para activar/verificar Node 22.22.0.
 - [ ] Una DB ya inicializada con el seed demo conserva esos datos; no se borra ni migra automáticamente.
 

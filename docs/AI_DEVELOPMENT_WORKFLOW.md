@@ -175,7 +175,7 @@ Luego:
 - [x] `.github/agents/neni-commerce-engineer.agent.md`.
 - [x] El agente `neni-commerce-engineer` aparece en VS Code.
 - [x] `pnpm neni:setup` levanta PostgreSQL/Redis y aplica migraciones.
-- [ ] Baseline completamente verde con `pnpm neni:check`.
+- [x] Baseline completamente verde con `pnpm neni:check`.
 
 ---
 
@@ -268,7 +268,7 @@ Luego:
   - bloqueantes.
 - [ ] Decidir telemetría Medusa.
 - [ ] Evitar mezcla entre seeds demo y Neni.
-- [ ] `pnpm neni:check` completamente verde.
+- [x] `pnpm neni:check` completamente verde.
 
 ---
 
