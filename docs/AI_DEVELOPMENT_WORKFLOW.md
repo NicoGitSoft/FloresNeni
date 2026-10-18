@@ -212,7 +212,7 @@ Luego:
 - [x] Trigger en PR hacia `v2`.
 - [x] Configurar Node 22.22.0 y pnpm 10.34.6 en orden reproducible.
 - [x] Configurar instalación frozen-lockfile, diff check, typecheck y builds.
-- [ ] Confirmar que GitHub Actions completa exitosamente el workflow antes de declarar CI verde.
+- [x] GitHub Actions completó exitosamente el workflow CI del PR #2.
 - [ ] Unit tests relevantes.
 - [ ] Integration tests posteriores con PostgreSQL/Redis.
 - [x] Hacer que CI y `pnpm neni:check` compartan las mismas validaciones configuradas.
