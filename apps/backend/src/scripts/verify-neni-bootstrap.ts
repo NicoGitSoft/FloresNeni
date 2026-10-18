@@ -20,6 +20,20 @@ const expectedProductHandles = [
   "jardin-de-flores",
 ]
 
+const expectedCatalogPrices: Record<string, number> = {
+  "petit-mirasol": 16000,
+  "rosas-5": 16500,
+  "rosas-eucalipto": 18000,
+  "triada-amarilla": 19000,
+  "mix-del-dia": 25000,
+  "romantico-12": 26000,
+  "tulipanes-amanecer": 26000,
+  mirasol: 29000,
+  "clasico-especial": 30000,
+  berries: 35000,
+  "jardin-de-flores": 44000,
+}
+
 export default async function verifyNeniBootstrap({
   container,
 }: ExecArgs) {
@@ -59,6 +73,28 @@ export default async function verifyNeniBootstrap({
       region.currency_code === "clp" &&
       region.countries?.some((country) => country?.iso_2 === "cl")
   )
+  const { data: catalogProducts } = await query.graph({
+    entity: "product",
+    fields: [
+      "handle",
+      "variants.sku",
+      "variants.price_set.prices.amount",
+      "variants.price_set.prices.currency_code",
+    ],
+    filters: { handle: expectedProductHandles },
+  })
+  const catalogPricesPreserved = Object.entries(expectedCatalogPrices).filter(
+    ([handle, expectedAmount]) => {
+      const product = catalogProducts.find((candidate) => candidate.handle === handle)
+      return product?.variants?.some((variant) =>
+        variant.price_set?.prices?.some(
+          (price) =>
+            price?.currency_code === "clp" &&
+            Number(price?.amount) === expectedAmount
+        )
+      )
+    }
+  ).length
 
   const salesChannels = await salesChannelService.listSalesChannels({
     name: "Neni Web",
@@ -80,12 +116,12 @@ export default async function verifyNeniBootstrap({
     ["Stock Location Taller Neni", stockLocations.length, 1],
     ["Publishable API Key Neni Web Storefront", publishableApiKeys.length, 1],
     ["Handles de producto duplicados o ausentes", duplicateProductHandles, 0],
+    ["Precios CLP del catálogo preservados", catalogPricesPreserved, 11],
   ] as const
 
   for (const [label, actual, expected] of counts) {
     logger.info(`[Bootstrap smoke] ${label}: ${actual} (esperado: ${expected})`)
   }
-
   const mismatches = counts.filter(([, actual, expected]) => actual !== expected)
   if (mismatches.length) {
     throw new MedusaError(

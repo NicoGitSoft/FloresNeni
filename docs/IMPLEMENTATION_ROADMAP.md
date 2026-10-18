@@ -10,7 +10,8 @@
 
 - [x] Codespaces fija Node 22.22.0 y conserva pnpm 10.34.6.
 - [x] `pnpm neni:setup` aplica migraciones Medusa y luego ejecuta el bootstrap Neni.
-- [x] `pnpm neni:bootstrap` provisiona recursos Neni y los 11 productos de forma idempotente.
+- [x] `pnpm neni:bootstrap` provisiona solo recursos/catálogo Neni validados; no crea fixtures ni stock DEMO.
+- [x] `pnpm neni:bootstrap:inventory-demo` crea separadamente los fixtures técnicos de Inventory/BOM para desarrollo o CI efímero.
 - [x] La Publishable API Key queda vinculada a `Neni Web` y se escribe en el `.env` ignorado del storefront.
 - [x] Scripts raíz usan los package names actuales.
 - [x] Workflow CI configura pnpm 10.34.6 antes de Node 22.22.0 y ejecuta las validaciones.
@@ -23,7 +24,7 @@
 - [ ] Rebuild del Codespace para activar/verificar Node 22.22.0.
 - [ ] Una DB ya inicializada con el seed demo conserva esos datos; no se borra ni migra automáticamente.
 
-Para un entorno nuevo: `pnpm neni:setup`, luego `pnpm neni:dev`. Para volver a ejecutar solo los datos: `pnpm neni:bootstrap`.
+Para un entorno nuevo: `pnpm neni:setup`, luego `pnpm neni:dev`. El catálogo real se repite con `pnpm neni:bootstrap`; los datos sintéticos se crean solo con `pnpm neni:bootstrap:inventory-demo`.
 
 ---
 
@@ -47,8 +48,10 @@ Para un entorno nuevo: `pnpm neni:setup`, luego `pnpm neni:dev`. Para volver a e
 - [x] Carrito real
 - [x] Checkout Base sin pagos: datos de contacto y retiro/despacho guardados en Cart vía Medusa.
 - [x] `requested_date` persistida como fecha solicitada, sin promesa de disponibilidad.
-- [ ] Inventario materias primas
-- [ ] Recetas
+- [x] Inventory Items y niveles nativos de Medusa para cuatro materiales sintéticos DEMO, marcados como no comerciales.
+- [x] BOM/Inventory Kit persistente en una variante fixture `DRAFT` no vendible; productos comerciales siguen sin recetas inventadas.
+- [x] `material_buildable_quantity` puro y API Store de inspección de componentes.
+- [ ] Materias primas, stock y recetas reales confirmadas por Denise.
 - [ ] Production Module
 - [ ] Availability Engine
 - [ ] `promised_date`, reservas y concurrencia
@@ -90,44 +93,32 @@ Sin pagos todavía.
 
 ## Fase 3 — Inventario
 
-Crear Stock Location:
+Reutilizar la ubicación existente, sin crear otra:
 
 `Taller Neni`
 
-Materias primas:
+- [x] Usar Inventory Module de Medusa para Inventory Items y Inventory Levels.
+- [x] Crear fixture DEMO de flor/follaje/papel/cinta con SKUs estables, unidad nativa y categoría en `InventoryItem.material`, mediante comando explícito.
+- [x] Inicializar niveles sintéticos DEMO en Taller Neni; `pnpm neni:bootstrap` no los crea ni modifica.
+- [ ] Cargar materias primas y stock reales de Denise.
+- [ ] Activar inventario en variantes comerciales al confirmar sus recetas.
+- [ ] Costos unitarios, proveedor, lote y precio histórico; mantenerlos separados de Pricing/precio de venta.
 
-- flores
-- follajes
-- papeles
-- cintas
-- insumos
-
-Activar `manage_inventory`.
-
-Mantener:
-
-- cantidad física
-- cantidad reservada
-- cantidad útil
-- costo
-- proveedor
-- fecha ingreso
+Medusa expone `available_quantity` en sus niveles y `retrieveAvailableQuantity` en Inventory Module. Este slice no crea ni consume reservas.
 
 ---
 
 ## Fase 4 — Recetas / BOM
 
-Cada ramo debe conocer:
+- [x] Persistir el BOM DEMO mediante el Inventory Kit nativo de la variante fixture `DRAFT`.
+- [x] Guardar `required_quantity` en los links oficiales Variant ↔ Inventory Item; los componentes actuales son requeridos.
+- [x] Calcular `material_buildable_quantity` usando cantidades disponibles autoritativas de Medusa.
+- [x] Exponer `GET /store/neni/variants/:id/materials` exclusivamente para el producto/variant DEMO y componentes `demo_only`; sin costos/proveedores ni stock real.
+- [ ] Definir recetas productivas de los 11 productos con cantidades confirmadas por Denise.
+- [ ] UI Admin para editar BOM sin código.
+- [ ] Grupos de sustitución; hoy el BOM es exacto y no modela sustituciones.
 
-- ingredientes
-- cantidades
-- componentes obligatorios
-- componentes sustituibles
-- minutos de confección
-
-Usar Medusa Inventory Kits cuando la receta sea fija.
-
-Las sustituciones florales se administrarán en Neni Production.
+El modelo deja cada componente como link individual, lo que permite añadir más adelante grupos de sustitución sin inventar recetas ni ampliar ahora el módulo de producción. Minutos quedan para el Production Module. La futura consulta de receta/stock real debe ser Admin-authenticated o interna de Production/Availability, nunca una Store API pública con cantidades operativas.
 
 ---
 
