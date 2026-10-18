@@ -1,7 +1,7 @@
 # Neni — AI Development Workflow & Master Checklist
 
-**Branch de integración:** `v2`  
-**Objetivo:** mantener un flujo de desarrollo reproducible, auditable y rápido para humanos + agentes de IA.  
+**Branch de integración:** `v2`
+**Objetivo:** mantener un flujo de desarrollo reproducible, auditable y rápido para humanos + agentes de IA.
 **Estado:** documento vivo. Actualizar cuando cambie el flujo, la arquitectura o las reglas de trabajo.
 
 ---
