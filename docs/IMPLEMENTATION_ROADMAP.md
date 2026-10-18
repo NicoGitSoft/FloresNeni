@@ -9,11 +9,12 @@
 ## Developer Platform v1
 
 - [x] Codespaces fija Node 22.22.0 y conserva pnpm 10.34.6.
-- [x] `pnpm neni:setup` separa migraciones (`--skip-scripts`) del bootstrap de datos.
+- [x] `pnpm neni:setup` aplica las migraciones Medusa y después ejecuta separadamente el bootstrap de datos Neni.
 - [x] `pnpm neni:bootstrap` provisiona recursos Neni y los 11 productos de forma idempotente.
 - [x] La Publishable API Key queda vinculada a `Neni Web` y se escribe en el `.env` ignorado del storefront.
 - [x] Scripts raíz usan los package names actuales.
-- [x] CI valida instalación frozen-lockfile, versiones, storefront, backend y `neni:check`.
+- [x] Workflow CI configura pnpm 10.34.6 antes de Node 22.22.0 y ejecuta las validaciones.
+- [ ] Confirmar una ejecución exitosa de GitHub Actions antes de marcar CI como verde.
 - [ ] Rebuild del Codespace para activar/verificar Node 22.22.0.
 - [ ] Una DB ya inicializada con el seed demo conserva esos datos; no se borra ni migra automáticamente.
 
@@ -389,4 +390,3 @@ Migrar fotografías desde `public/` hacia almacenamiento administrable:
 Nunca cobrar un pedido hasta poder garantizar:
 
 `precio + materiales + capacidad + cupo + fecha`
-

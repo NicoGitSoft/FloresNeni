@@ -8,7 +8,7 @@ echo "→ git diff --check"
 git diff --check
 
 echo "→ storefront typecheck"
-pnpm --filter @dtc/backend exec tsc --noEmit --project ../storefront/tsconfig.json
+pnpm --filter @neni/storefront exec tsc --noEmit
 
 echo "→ storefront build"
 pnpm --filter @neni/storefront build

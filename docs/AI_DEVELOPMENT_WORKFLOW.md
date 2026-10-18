@@ -210,16 +210,12 @@ Luego:
 
 - [x] Crear `.github/workflows/ci.yml`.
 - [x] Trigger en PR hacia `v2`.
-- [x] Node 22.22.0.
-- [x] pnpm 10.34.6.
-- [x] `pnpm install --frozen-lockfile`.
-- [x] `git diff --check`.
-- [x] Storefront TypeScript.
-- [x] Storefront build.
-- [x] Backend build.
+- [x] Configurar Node 22.22.0 y pnpm 10.34.6 en orden reproducible.
+- [x] Configurar instalación frozen-lockfile, diff check, typecheck y builds.
+- [ ] Confirmar que GitHub Actions completa exitosamente el workflow antes de declarar CI verde.
 - [ ] Unit tests relevantes.
 - [ ] Integration tests posteriores con PostgreSQL/Redis.
-- [x] Hacer que CI y `pnpm neni:check` compartan la misma verdad.
+- [x] Hacer que CI y `pnpm neni:check` compartan las mismas validaciones configuradas.
 - [ ] Añadir dependency scanning / CodeQL cuando el baseline esté estable.
 
 ---

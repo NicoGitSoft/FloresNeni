@@ -75,7 +75,7 @@ docker compose -f infra/dev/compose.yaml --env-file infra/dev/.env exec -T postg
 say "Aplicando migraciones Medusa"
 (
   cd apps/backend
-  pnpm exec medusa db:migrate --skip-scripts
+  pnpm exec medusa db:migrate
 )
 
 say "Aplicando bootstrap de desarrollo Neni"
