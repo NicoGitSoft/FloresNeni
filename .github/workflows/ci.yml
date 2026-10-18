@@ -88,5 +88,8 @@ jobs:
             git diff --check "HEAD^" HEAD
           fi
 
+      - name: Run checkout unit tests
+        run: pnpm neni:test:checkout
+
       - name: Run Neni checks
         run: pnpm neni:check

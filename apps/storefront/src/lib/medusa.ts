@@ -46,10 +46,17 @@ async function medusaFetch<T>(
   )
 
   if (!response.ok) {
-    const body = await response.text()
+    const body = await response.json().catch(() => null) as {
+      message?: unknown
+      errors?: { message?: unknown }[]
+    } | null
+    const detail =
+      (typeof body?.message === "string" && body.message) ||
+      (typeof body?.errors?.[0]?.message === "string" && body.errors[0].message) ||
+      "No pudimos procesar la solicitud."
 
     throw new Error(
-      `Medusa respondió ${response.status}: ${body}`
+      `Medusa respondió ${response.status}: ${detail.slice(0, 240)}`
     )
   }
 
@@ -210,16 +217,70 @@ export type MedusaCartLineItem = {
   total?: number
 }
 
+export type NeniCheckoutMetadata = {
+  fulfillment_method?: "pickup" | "delivery"
+  requested_date?: string
+  first_name?: string
+  last_name?: string
+  phone?: string
+}
+
+export type MedusaAddress = {
+  first_name?: string | null
+  last_name?: string | null
+  address_1?: string | null
+  address_2?: string | null
+  city?: string | null
+  province?: string | null
+  postal_code?: string | null
+  country_code?: string | null
+  phone?: string | null
+}
+
 export type MedusaCart = {
   id: string
 
   region_id?: string
   currency_code?: string
+  email?: string | null
+  metadata?: (Record<string, unknown> & {
+    neni_checkout?: NeniCheckoutMetadata
+  }) | null
+  shipping_address?: MedusaAddress | null
 
   items?: MedusaCartLineItem[]
 
   subtotal?: number
   total?: number
+}
+
+export type NeniCheckoutInput = {
+  first_name: string
+  last_name: string
+  email: string
+  phone: string
+  fulfillment_method: "pickup" | "delivery"
+  requested_date: string
+  delivery_address?: {
+    address_1: string
+    address_2?: string
+    city: string
+    province?: string
+    postal_code?: string
+  }
+}
+
+export function getChileTodayForDateInput(now = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Santiago",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now)
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((candidate) => candidate.type === type)?.value ?? ""
+
+  return `${part("year")}-${part("month")}-${part("day")}`
 }
 
 export async function createCart():
@@ -253,6 +314,24 @@ export async function getCart(
     }>(
       `/store/carts/${encodeURIComponent(cartId)}`
     )
+
+  return data.cart
+}
+
+export async function saveNeniCheckout(
+  cartId: string,
+  checkout: NeniCheckoutInput
+): Promise<MedusaCart> {
+  const data = await medusaFetch<{ cart: MedusaCart }>(
+    "/store/neni/checkout",
+    {
+      method: "POST",
+      body: {
+        cart_id: cartId,
+        ...checkout,
+      },
+    }
+  )
 
   return data.cart
 }

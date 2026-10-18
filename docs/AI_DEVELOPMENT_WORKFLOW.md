@@ -235,7 +235,8 @@ Luego:
 - [x] Configurar Node 22.22.0 y pnpm 10.34.6 en orden reproducible.
 - [x] Configurar instalación frozen-lockfile, diff check, typecheck y builds.
 - [x] GitHub Actions completó exitosamente el workflow CI del PR #2.
-- [ ] Unit tests relevantes.
+- [x] Checkout Base: validación unitaria focalizada integrada al CI.
+- [ ] Unit tests adicionales para otras reglas de negocio.
 - [ ] Integration tests posteriores con PostgreSQL/Redis.
 - [x] `pnpm neni:check` comparte con CI los checks estáticos/build principales; CI añade además el smoke de bootstrap limpio con PostgreSQL/Redis.
 - [x] Añadir smoke de bootstrap en PostgreSQL/Redis efímeros: migración, dos ejecuciones y conteos oficiales de Medusa para catálogo y recursos Neni.
@@ -321,14 +322,14 @@ Para una tarea sustancial:
 - [x] Carrito Medusa real.
 - [x] Persistencia de cart ID.
 - [ ] Cerrar cualquier pendiente de ficha de producto.
-- [ ] Checkout base sin pagos:
-  - [ ] nombre/contacto;
-  - [ ] email;
-  - [ ] teléfono;
-  - [ ] dirección;
-  - [ ] retiro/despacho;
-  - [ ] fecha solicitada;
-  - [ ] validación server-side.
+- [x] Checkout Base sin pagos en `/checkout`, reutilizando el Cart persistido.
+- [x] Nombre, apellido, email, teléfono y dirección de despacho guardados server-side.
+- [x] Intención pickup/delivery guardada en metadata; pickup no guarda dirección de retiro inventada.
+- [x] `requested_date` validada por fecha civil de Chile y persistida como solicitud, nunca como promesa.
+- [x] Resumen Medusa y restauración del formulario desde el Cart.
+- [x] Validación server-side de Cart, campos y región que admita Chile.
+- [ ] Availability Engine y `promised_date`.
+- [ ] Reservation/concurrency y Webpay.
 - [ ] No integrar Webpay todavía.
 
 ---
@@ -443,11 +444,13 @@ Sección `Neni Producción`:
 
 ## Fase 15 — Testing
 
-- [ ] Unit tests para reglas puras.
+- [x] Unit tests de validación pura del Checkout Base.
+- [ ] Unit tests adicionales para reglas de inventario/producción.
 - [ ] Integration tests Medusa.
 - [ ] Tests de disponibilidad.
 - [ ] Tests de concurrencia.
-- [ ] Tests de checkout.
+- [x] Tests de validación del Checkout Base.
+- [ ] Integration tests HTTP del checkout en CI.
 - [ ] E2E navegador.
 - [ ] Mobile.
 - [ ] Desktop.
@@ -491,6 +494,6 @@ Orden actual:
 6. `pnpm neni:check` verde.
 7. CI inicial.
 8. Cloud Agent readiness.
-9. Retomar Checkout base.
+9. Checkout Base sin pagos implementado; siguiente: Inventario/recetas → Production Module → Availability Engine y promesa autoritativa antes de reservas/Webpay.
 
 No integrar Webpay hasta que inventario, capacidad, fecha y reservas sean autoritativos server-side.
