@@ -1,0 +1,29 @@
+{
+  "name": "Neni Commerce Dev",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [4321, 9000],
+  "portsAttributes": {
+    "4321": {
+      "label": "Neni Storefront",
+      "onAutoForward": "openPreview"
+    },
+    "9000": {
+      "label": "Medusa Backend",
+      "onAutoForward": "notify"
+    }
+  },
+  "postCreateCommand": "sudo corepack enable && corepack prepare pnpm@10.34.6 --activate && pnpm install --frozen-lockfile",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "github.vscode-github-actions"
+      ]
+    }
+  }
+}
