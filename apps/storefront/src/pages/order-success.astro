@@ -1,0 +1,34 @@
+---
+import "../styles/storefront.css"
+
+const orderId = Astro.url.searchParams.get("order_id")
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neni — Pedido recibido</title>
+  </head>
+  <body>
+    <main class="checkout-page">
+      <div class="checkout-page__heading">
+        <span>Neni</span>
+        <h1>Pedido recibido</h1>
+        <p>La orden fue creada en Medusa.</p>
+      </div>
+
+      <section class="checkout-card">
+        <strong>Order ID</strong>
+        <p>{orderId ?? "No informado"}</p>
+      </section>
+
+      <a href="/">Volver al catálogo</a>
+    </main>
+
+    <script is:inline>
+      localStorage.removeItem("neni_cart_id")
+    </script>
+  </body>
+</html>

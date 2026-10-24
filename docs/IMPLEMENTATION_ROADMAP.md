@@ -390,3 +390,39 @@ Migrar fotografías desde `public/` hacia almacenamiento administrable:
 Nunca cobrar un pedido hasta poder garantizar:
 
 `precio + materiales + capacidad + cupo + fecha`
+
+## Payment vertical slice — Webpay v1
+
+Objetivo inmediato: cerrar el happy path e-commerce antes de seguir
+sobreconstruyendo Availability.
+
+- [x] Medusa 2.22.1 + Node >=22.22.0 validados en build local.
+- [x] Shipping Method dev para despacho/retiro.
+- [x] Payment Collection + `pp_system_default` → Order real (smoke local).
+- [x] Payment Provider `pp_webpay_webpay` implementado y configurado.
+- [x] Webpay Plus integration create → redirect → return → commit implementado.
+- [x] Retorno valida Cart, token, proveedor, CLP, monto, buy_order y session_id.
+- [x] Commit ambiguo se reconcilia con status remoto antes de aceptar pago.
+- [x] Retorno ejecuta un solo flujo top-level de finalización Medusa.
+- [ ] Validar Order success en sandbox aprobado y fallo/cancelación sin Order pagada.
+- [ ] Refund smoke.
+- [ ] Credenciales/HTTPS de producción (posterior).
+- [ ] Availability/reservas/locking productivo (posterior).
+
+### Cierre técnico verificado en feature/webpay-checkout-v1
+
+- [x] Frozen install, scripts check, checkout tests, inventory tests, Webpay tests
+  y storefront/backend builds pasan localmente.
+- [x] Readiness de payments y Cart→Order local (API + browser) pasan.
+- [x] Regresión determinista para no recommit cuando status remoto ya está
+  `AUTHORIZED`, recuperación tras timeout y sesiones callback viejas/ambiguas.
+- [x] Provider valida balance remoto antes de refund y la respuesta de
+  `NULLIFIED`/`REVERSED`.
+- [x] Comando read-only `neni:webpay:diagnose` reporta estado remoto, token
+  redactado, Order y vínculo con Payment Collection sin reintentar operaciones.
+- [x] Smoke E2E de Order (API + browser).
+- [ ] Sandbox Webpay aprobado/rechazado/cancelado y refund; no verificados en
+  este entorno.
+- [ ] Ledger/conciliación durable para reintentos de refund parcial ambiguo y
+  reparación automática de links/checkpoints/locks Medusa; requisito antes de
+  producción. El diagnóstico actual solo informa y no repara.
