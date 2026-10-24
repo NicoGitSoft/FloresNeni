@@ -261,3 +261,20 @@ body.neni-v3 .neni-quick-dialog__thumbnails button:hover { transform: translateY
   body.neni-v3 .product-card__footer button,
   body.neni-v3 .neni-dialog button { transition: none !important; transform: none !important; }
 }
+
+/* Ambient atmosphere continues across the whole editorial page. */
+body.neni-v3 .story-block,
+body.neni-v3 .closing-note { position: relative; isolation: isolate; overflow: hidden; }
+body.neni-v3 .story-block > .floral-scene__canvas,
+body.neni-v3 .closing-note > .floral-scene__canvas { z-index: 0; opacity: .52; }
+body.neni-v3 .story-block > :not(.floral-scene__canvas),
+body.neni-v3 .closing-note > :not(.floral-scene__canvas) { position: relative; z-index: 1; }
+body.neni-v3 .footer { position: relative; isolation: isolate; }
+body.neni-v3 .footer::before {
+  content: ""; position: absolute; right: 2%; bottom: 8%;
+  width: min(26vw, 320px); aspect-ratio: 360/380;
+  background: url("/images/botanical/atelier-bloom.svg") center/contain no-repeat;
+  opacity: .1; transform: rotate(-12deg); pointer-events: none;
+}
+body.neni-v3 .footer > * { position: relative; z-index: 1; }
+body.neni-v3 .product-card .product-card__media:hover { opacity: 1; }
