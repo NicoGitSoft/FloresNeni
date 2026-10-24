@@ -21,7 +21,8 @@
     "neni:dev": "pnpm --filter @dtc/backend --filter @neni/storefront --parallel --stream dev",
     "neni:check": "bash scripts/neni-check.sh",
     "neni:test:checkout": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules pnpm --filter @dtc/backend exec jest --runInBand --runTestsByPath src/api/store/neni/checkout/__tests__/validation.unit.spec.ts",
-    "neni:test:inventory": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules pnpm --filter @dtc/backend exec jest --runInBand --runTestsByPath src/utils/inventory/__tests__/material-buildable-quantity.unit.spec.ts"
+    "neni:test:inventory": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules pnpm --filter @dtc/backend exec jest --runInBand --runTestsByPath src/utils/inventory/__tests__/material-buildable-quantity.unit.spec.ts",
+    "neni:test:frontend-v3": "node --test scripts/neni-v3-smoke.test.mjs"
   },
   "pnpm": {
     "overrides": {
@@ -41,8 +42,6 @@
     "eslint": "^9.39.4",
     "jiti": "^2.7.0",
     "prettier": "^3.2.5",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
     "turbo": "^2.0.14"
   }
 }

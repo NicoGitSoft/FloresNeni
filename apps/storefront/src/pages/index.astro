@@ -4,184 +4,115 @@ import "../styles/storefront.css"
 ---
 
 <!doctype html>
-
-<html lang="es">
-
+<html lang="es-CL">
   <head>
-
     <meta charset="UTF-8" />
-
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1"
-    />
-
-    <meta
-      name="description"
-      content="Neni — Taller de Flores. Diseños florales hechos en Santiago."
-    />
-
-    <title>
-      Neni — Taller de Flores
-    </title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f2eb" />
+    <meta name="description" content="Neni, taller de flores en Santiago. Ramos de autor y composiciones botánicas con intención, hechos a mano para momentos únicos." />
+    <meta property="og:title" content="Neni — Taller de flores" />
+    <meta property="og:description" content="Flores con intención. Un pequeño taller, muchos motivos para florecer." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>Neni — Taller de Flores | Santiago</title>
   </head>
 
-
-  <body>
-
-    <header class="site-header">
-
-      <a
-        class="brand"
-        href="/"
-        aria-label="Neni Taller de Flores"
-      >
-
-        <img
-          src="/images/Logos/Neni_transparente_vino.png"
-          alt="Neni Taller de Flores"
-        />
-
+  <body class="neni-v3">
+    <a class="skip-link" href="#contenido">Ir al contenido</a>
+    <div class="top-ribbon"><span>DISEÑOS FLORALES HECHOS CON INTENCIÓN</span><span aria-hidden="true">✳</span><span>UN TALLER DE FLORES EN SANTIAGO</span></div>
+    <header class="site-header" id="inicio">
+      <a class="brand" href="/" aria-label="Neni, volver al inicio">
+        <img src="/images/Logos/Neni_transparente_vino.png" alt="Neni, taller de flores" width="140" height="74" />
       </a>
-
-
-      <nav class="navigation">
-
-        <a href="#flores">
-          Flores
-        </a>
-
-        <a href="#neni">
-          Diseño Neni
-        </a>
-
-        <a href="#contacto">
-          Contacto
-        </a>
-
+      <nav class="navigation" aria-label="Navegación principal">
+        <a href="#flores">Colección</a>
+        <a href="#neni">Nuestro taller</a>
+        <a href="#contacto">Contacto</a>
       </nav>
-
+      <details class="mobile-nav">
+        <summary aria-label="Abrir menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
+        <nav aria-label="Navegación móvil">
+          <a href="#flores">Colección de flores</a>
+          <a href="#neni">Nuestro taller</a>
+          <a href="#contacto">Contacto</a>
+        </nav>
+      </details>
+      <div class="header-cart-slot" id="cart-header-slot" aria-live="polite"></div>
     </header>
 
-
-    <main>
-
-      <section class="hero">
-
-        <div class="hero__eyebrow">
-          Taller de flores · Santiago
+    <main id="contenido">
+      <section class="hero" aria-labelledby="hero-title" data-botanical-wind>
+        <canvas class="hero__wind" aria-hidden="true"></canvas>
+        <div class="hero__wash" aria-hidden="true"></div>
+        <div class="hero__copy">
+          <div class="hero__eyebrow"><span class="eyebrow-rule"></span> UN PEQUEÑO TALLER, MUCHOS MOTIVOS PARA FLORECER</div>
+          <h1 id="hero-title">Hay flores que <em>dicen todo.</em></h1>
+          <p>Ramos que abrazan, colores que recuerdan y pequeños gestos que se quedan. Flores pensadas para cada historia, hechas a mano y con mucho amor.</p>
+          <div class="hero__actions">
+            <a class="hero__action" href="#flores">Explorar la colección <span aria-hidden="true">↗</span></a>
+            <a class="hero__secondary" href="#neni">Conoce nuestro taller <span aria-hidden="true">↗</span></a>
+          </div>
+          <span class="hero__signature">tu vecina que te salva en momentos especiales</span>
         </div>
-
-
-        <h1>
-
-          Flores para decir
-
-          <em>
-            lo que a veces cuesta decir.
-          </em>
-
-        </h1>
-
-
-        <p>
-
-          Diseños hechos a mano,
-          flores elegidas con intención
-          y composiciones que cambian
-          con cada temporada.
-
-        </p>
-
-
-        <a
-          class="hero__action"
-          href="#flores"
-        >
-          Ver flores
-        </a>
-
+        <div class="hero__composition">
+          <div class="hero__photo-wrap">
+            <img class="hero__photo" src="/images/products/jardin-flores-1.jpeg" alt="Arreglo de flores frescas, creado artesanalmente en el taller Neni" width="760" height="950" fetchpriority="high" />
+          </div>
+          <span class="hero__photo-note">FLORES DEL TALLER <span aria-hidden="true">—</span> 01 / 03</span>
+          <img class="hero__illustration" src="/images/botanical/atelier-bloom.svg" width="210" height="268" alt="" loading="lazy" />
+        </div>
+        <div class="hero__bottom-note" aria-hidden="true">DESLIZA PARA DESCUBRIR <span>↓</span></div>
       </section>
 
+      <div class="manifesto-strip" aria-label="Nuestra filosofía"><span>Flor a flor</span><i aria-hidden="true">✳</i><span>sin prisa</span><i aria-hidden="true">✳</i><span>con intención</span></div>
 
-      <section
-        class="catalog"
-        id="flores"
-      >
-
+      <section class="catalog" id="flores" aria-labelledby="catalog-title">
         <header class="section-heading">
-
-          <span>
-            Diseños Neni
-          </span>
-
-
-          <h2>
-            Flores del taller
-          </h2>
-
-
-          <p>
-            El catálogo se carga directamente
-            desde nuestro taller.
-          </p>
-
+          <div class="section-heading__inner">
+            <div><span class="section-kicker">01 / NUESTRA COLECCIÓN</span><h2 id="catalog-title">Pequeñas <em>maravillas</em> de temporada.</h2></div>
+            <p>Flores elegidas una a una, con su propia personalidad. Elige la que hable por ti.</p>
+          </div>
+          <div class="watercolor-divider" aria-hidden="true"></div>
         </header>
-
-
         <Storefront client:load />
-
       </section>
 
-
-      <section
-        class="neni-section"
-        id="neni"
-      >
-
-        <span>
-          Diseño Neni
-        </span>
-
-
-        <h2>
-          Cuéntanos la ocasión.
-          Nosotros hacemos el resto.
-        </h2>
-
-
-        <p>
-
-          Puedes contarnos tu presupuesto,
-          colores o intención y Neni diseña
-          una composición especialmente
-          para ese momento.
-
-        </p>
-
+      <section class="story-block" id="neni" aria-labelledby="story-title">
+        <div class="story-block__visual">
+          <img src="/images/products/rosas-eucalipto.jpeg" loading="lazy" width="720" height="920" alt="Composición de rosas y eucalipto del taller Neni" />
+          <span class="story-block__image-caption">DE NUESTRO TALLER, CON AMOR</span>
+        </div>
+        <div class="story-block__text">
+          <span class="section-kicker">02 / DETRÁS DE CADA RAMO</span>
+          <h2 id="story-title">No son solo flores. <em>Es lo que quieres decir.</em></h2>
+          <p>En Neni creemos en la belleza de los detalles. Cada tallo, cada textura y cada color tiene un lugar en la historia que quieres contar.</p>
+          <p>Composiciones que conservan ese toque de naturaleza viva: espontáneas, sensibles y siempre únicas.</p>
+          <a class="story-block__link" href="#contacto">Hablemos de tus flores <span aria-hidden="true">↗</span></a>
+          <img class="story-block__ornament" src="/images/botanical/atelier-bloom.svg" loading="lazy" width="200" height="250" alt="" />
+        </div>
       </section>
 
+      <section class="closing-note" aria-labelledby="closing-title">
+        <span class="section-kicker">03 / ESE DETALLE ESPECIAL</span>
+        <h2 id="closing-title">Para los <em>te quiero,</em> los <em>gracias</em> y los <em>porque sí.</em></h2>
+        <a class="hero__action" href="#flores">Encontrar mis flores <span aria-hidden="true">↗</span></a>
+      </section>
     </main>
 
-
-    <footer
-      class="footer"
-      id="contacto"
-    >
-
-      <img
-        src="/images/Logos/Neni_transparente_grafito.png"
-        alt="Neni"
-      />
-
-
-      <p>
-        Tu contacto de emergencia floral.
-      </p>
-
+    <footer class="footer" id="contacto">
+      <div class="footer__inner">
+        <div><img src="/images/Logos/Neni_marfil.png" alt="" width="155" height="78" onerror="this.src='/images/Logos/Neni_marfil.png'" /><p>Tu contacto de emergencias de flores.</p></div>
+        <div class="footer__side"><span>TALLER DE FLORES · SANTIAGO, CHILE</span><a href="#inicio">Volver arriba ↑</a></div>
+      </div>
+      <div class="footer__bottom"><span>© {new Date().getFullYear()} Neni — Taller de flores</span><span>Hecho con amor, flor a flor.</span></div>
     </footer>
-
+    <script is:inline type="module" src="/js/botanical-wind.js"></script>
+    <script is:inline>
+      document.querySelectorAll(".mobile-nav a").forEach(link => {
+        link.addEventListener("click", () => link.closest("details")?.removeAttribute("open"));
+      });
+    </script>
   </body>
-
 </html>

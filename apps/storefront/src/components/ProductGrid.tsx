@@ -1,199 +1,149 @@
+import { useEffect, useRef, useState } from "react"
 import {
-  useEffect,
-  useState,
-} from "react"
-
-import {
-  formatCLP,
-  getProductImage,
-  getProductPrice,
-  getProductVariantId,
-  getProducts,
-  type MedusaProduct,
+  formatCLP, getProductImage, getProductPrice, getProductVariantId,
+  getProducts, type MedusaProduct,
 } from "../lib/medusa"
-
-import {
-  useCart,
-} from "./CartContext"
+import { useCart } from "./CartContext"
 
 export default function ProductGrid() {
-  const [
-    products,
-    setProducts,
-  ] =
-    useState<MedusaProduct[]>([])
-
-  const [
-    loading,
-    setLoading,
-  ] =
-    useState(true)
-
-  const [
-    error,
-    setError,
-  ] =
-    useState<string | null>(null)
-
-  const {
-    addItem,
-    busy,
-  } =
-    useCart()
+  const [products, setProducts] = useState<MedusaProduct[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selected, setSelected] = useState<MedusaProduct | null>(null)
+  const [imageIndex, setImageIndex] = useState(0)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const openerRef = useRef<HTMLButtonElement | null>(null)
+  const { addItem, busy, error: cartError } = useCart()
 
   useEffect(() => {
-    async function loadProducts() {
-      try {
-        const result =
-          await getProducts()
-
+    let active = true
+    getProducts().then(result => {
+      if (active) {
         setProducts(result)
-
-      } catch (err) {
-        console.error(err)
-
-        setError(
-          err instanceof Error
-            ? err.message
-            : "No fue posible cargar el catálogo."
-        )
-
-      } finally {
-        setLoading(false)
+        setError(null)
       }
-    }
-
-    loadProducts()
+    }).catch(err => {
+      if (active) setError(err instanceof Error ? err.message : "No fue posible cargar el catálogo.")
+    }).finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
   }, [])
 
-  if (loading) {
-    return (
-      <p>
-        Cargando flores...
-      </p>
-    )
+  useEffect(() => {
+    const syncToUrl = () => {
+      const handle = new URL(window.location.href).searchParams.get("producto")
+      setSelected(products.find(item => item.handle === handle) ?? null)
+    }
+    syncToUrl()
+    window.addEventListener("popstate", syncToUrl)
+    return () => window.removeEventListener("popstate", syncToUrl)
+  }, [products])
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+    if (selected && !dialog.open) dialog.showModal()
+    if (!selected && dialog.open) dialog.close()
+    setImageIndex(0)
+  }, [selected])
+
+  function openProduct(product: MedusaProduct, trigger: HTMLButtonElement) {
+    openerRef.current = trigger
+    const url = new URL(window.location.href)
+    url.searchParams.set("producto", product.handle)
+    window.history.pushState({ ...window.history.state, neniQuickView: true }, "", url)
+    setSelected(product)
   }
 
-  if (error) {
-    return (
-      <p>
-        No pudimos cargar el catálogo.
-      </p>
-    )
+  function closeProduct() {
+    if (window.history.state?.neniQuickView) {
+      window.history.back()
+    } else {
+      const url = new URL(window.location.href)
+      url.searchParams.delete("producto")
+      window.history.replaceState(window.history.state, "", url)
+      setSelected(null)
+    }
+    openerRef.current?.focus()
   }
+
+  const quickImages = selected ? Array.from(new Set([getProductImage(selected), selected.metadata?.image_2].filter((image): image is string => Boolean(image)))) : []
+
+  if (loading) return <p className="catalog-feedback" role="status">Estamos preparando las flores del taller…</p>
+  if (error) return <p className="catalog-feedback" role="alert">No pudimos cargar el catálogo desde el taller. Verifica la conexión con Medusa y vuelve a intentarlo.</p>
+  if (!products.length) return <p className="catalog-feedback">Pronto florecerán nuevos diseños por aquí.</p>
 
   return (
-    <div className="products-grid">
-
-      {products.map(
-        product => {
-
-          const image =
-            getProductImage(
-              product
-            )
-
-          const price =
-            getProductPrice(
-              product
-            )
-
-          const variantId =
-            getProductVariantId(
-              product
-            )
-
+    <>
+      {cartError && <p className="catalog-feedback" role="alert">{cartError}</p>}
+      <div className="products-grid">
+        {products.map((product, index) => {
+          const image = getProductImage(product)
+          const price = getProductPrice(product)
+          const variantId = getProductVariantId(product)
           return (
-            <article
-              className="product-card"
-              key={product.id}
-              data-product-handle={
-                product.handle
-              }
-            >
-
-              {image && (
-                <img
-                  src={image}
-                  alt={product.title}
-                  loading="lazy"
-                />
-              )}
-
+            <article key={product.id} className="product-card" data-product-handle={product.handle}>
+              <button type="button" className="product-card__media"
+                aria-label={`Ver detalles de ${product.title}`}
+                onClick={event => openProduct(product, event.currentTarget)}>
+                {image && <img src={image} alt={product.title} loading="lazy" decoding="async" />}
+                {product.metadata?.image_2 && product.metadata.image_2 !== image && <img className="product-card__secondary" src={product.metadata.image_2} alt="" loading="lazy" decoding="async" />}
+                <span className="product-card__edition">{index < 3 ? "DESTACADO DEL TALLER" : "HECHO A MANO"}</span>
+                <span className="product-card__preview">Ver este diseño ↗</span>
+              </button>
               <div className="product-card__content">
-
-                <h3>
-                  {product.title}
-                </h3>
-
-                {
-                  product
-                    .metadata
-                    ?.composition &&
-                  (
-                    <p className="composition">
-
-                      {
-                        product
-                          .metadata
-                          .composition
-                      }
-
-                    </p>
-                  )
-                }
-
-                {
-                  product.description &&
-                  (
-                    <p>
-                      {
-                        product
-                          .description
-                      }
-                    </p>
-                  )
-                }
-
-                <strong>
-                  {
-                    formatCLP(
-                      price
-                    )
-                  }
-                </strong>
-
-                <button
-                  type="button"
-                  disabled={
-                    !variantId ||
-                    busy
-                  }
-                  onClick={() => {
-                    if (
-                      variantId
-                    ) {
-                      void addItem(
-                        variantId,
-                        1
-                      )
-                    }
-                  }}
-                >
-                  {
-                    busy
-                      ? "Actualizando..."
-                      : "Agregar al carrito"
-                  }
-                </button>
-
+                <h3>{product.title}</h3>
+                {product.metadata?.composition && <p className="composition">{product.metadata.composition}</p>}
+                {product.description && <p className="product-card__description">{product.description}</p>}
+                <div className="product-card__footer">
+                  <strong>{price === undefined ? "Consultar" : formatCLP(price)}</strong>
+                  <button type="button" disabled={!variantId || busy}
+                    onClick={() => { if (variantId) void addItem(variantId, 1) }}>
+                    {busy ? "Agregando…" : "Agregar +"}
+                  </button>
+                </div>
               </div>
-
             </article>
           )
-        }
-      )}
-
-    </div>
+        })}
+      </div>
+      <dialog ref={dialogRef} className="neni-dialog neni-quick-dialog"
+        aria-labelledby="neni-quick-title"
+        onClose={() => { if (selected) closeProduct() }}
+        onClick={event => { if (event.target === dialogRef.current) dialogRef.current?.close() }}>
+        {selected && (
+          <>
+            <div className="neni-dialog__header">
+              <span className="section-kicker">UN DISEÑO DEL TALLER</span>
+              <button type="button" className="neni-dialog__close" aria-label="Cerrar detalle" autoFocus
+                onClick={() => dialogRef.current?.close()}>×</button>
+            </div>
+            <div className="neni-quick-dialog__content">
+              <div className="neni-quick-dialog__gallery">
+                {quickImages.length > 0 && <img src={quickImages[imageIndex] ?? quickImages[0]} alt={selected.title} />}
+                {quickImages.length > 1 && (
+                  <div className="neni-quick-dialog__thumbnails" aria-label="Fotografías del diseño">
+                    {quickImages.map((image, index) => (
+                      <button key={image} type="button" aria-label={`Ver fotografía ${index + 1} de ${quickImages.length}`} aria-pressed={imageIndex === index} onClick={() => setImageIndex(index)}>
+                        <img src={image} alt="" loading="lazy" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="neni-quick-dialog__text">
+                <h2 id="neni-quick-title">{selected.title}</h2>
+                {selected.metadata?.composition && <p className="composition">{selected.metadata.composition}</p>}
+                {selected.description && <p>{selected.description}</p>}
+                <strong>{getProductPrice(selected) === undefined ? "Consultar" : formatCLP(getProductPrice(selected))}</strong>
+                <button type="button" disabled={!getProductVariantId(selected) || busy} onClick={() => {
+                  const variant = getProductVariantId(selected)
+                  if (variant) void addItem(variant, 1)
+                }}>{busy ? "Agregando…" : "Agregar al carrito +"}</button>
+              </div>
+            </div>
+          </>
+        )}
+      </dialog>
+    </>
   )
 }
