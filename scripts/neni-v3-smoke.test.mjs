@@ -101,3 +101,43 @@ test("hidden tab cancels active frame, resuming on visibility", () => {
   calls.listeners["document:visibilitychange"]()
   assert.equal(calls.scheduled, 2)
 })
+
+
+test("B3 product artwork stays rectangular with an offset frame", () => {
+  const styles = source("apps/storefront/src/styles/v3-refinements.css")
+  const productGrid = source("apps/storefront/src/components/ProductGrid.tsx")
+  assert.match(styles, /\.product-card \.product-card__media\s*\{/)
+  assert.match(styles, /border-radius: 3px 34px 3px 26px/)
+  assert.match(styles, /\.product-card__visual::before/)
+  assert.match(productGrid, /className="product-card__visual"/)
+})
+
+test("B3 colour harmony analyses photograph pixels, without fake fixed product prices", () => {
+  const palette = source("apps/storefront/src/lib/floralPalette.ts")
+  const productGrid = source("apps/storefront/src/components/ProductGrid.tsx")
+  assert.match(palette, /getImageData/)
+  assert.match(palette, /chroma/)
+  assert.match(palette, /hue/)
+  assert.match(productGrid, /onLoad=\{event => captureTone/)
+  assert.match(productGrid, /getProductPrice\(product\)/)
+})
+
+test("B3 modal and catalog have scoped background wind scenes", () => {
+  const home = source("apps/storefront/src/pages/index.astro")
+  const products = source("apps/storefront/src/components/ProductGrid.tsx")
+  const scenes = source("apps/storefront/public/js/floral-scenes.js")
+  assert.match(home, /data-floral-scene/)
+  assert.match(home, /floral-scenes\.js/)
+  assert.match(products, /data-floral-scene/)
+  assert.match(products, /neni-quick-dialog__ornament/)
+  assert.match(scenes, /pointerdown/)
+  assert.match(scenes, /prefers-reduced-motion/)
+  assert.match(scenes, /IntersectionObserver/)
+})
+
+test("B3 ornament has exactly two leaves and no extra lower branch", () => {
+  const art = source("apps/storefront/public/images/botanical/atelier-bloom.svg")
+  assert.match(art, /EXACTLY two symmetrical/)
+  assert.equal((art.match(/fill="#B4B99C"/g) ?? []).length, 2)
+  assert.doesNotMatch(art, /57 368/)
+})
