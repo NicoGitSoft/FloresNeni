@@ -1258,3 +1258,22 @@ body.neni-v3 .checkout-submit { background: var(--neni-wine); border-radius: 3px
   .mobile-nav { display: block; margin-left: auto; }
   .header-cart-slot { justify-content: flex-end; }
 }
+
+/* Product photography: subtle crossfade only when a second Medusa image exists. */
+.product-card__media > img.product-card__secondary {
+  position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0;
+  transition: opacity 700ms var(--neni-motion), transform 850ms var(--neni-motion);
+}
+@media (hover:hover) {
+  .product-card:hover .product-card__secondary,.product-card:focus-within .product-card__secondary { opacity: 1; }
+}
+.neni-quick-dialog__gallery { min-width: 0; }
+.neni-quick-dialog__gallery > img { display: block; width: 100%; height: 430px; object-fit: cover; }
+.neni-quick-dialog__thumbnails { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: .7rem; }
+.neni-quick-dialog__thumbnails button { width: 62px; height: 72px; flex: 0 0 auto; padding: 3px; border: 1px solid var(--neni-border); background: #fffbf5; cursor: pointer; }
+.neni-quick-dialog__thumbnails button[aria-pressed="true"] { border: 2px solid var(--neni-wine); }
+.neni-quick-dialog__thumbnails button > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 760px) {
+  .neni-quick-dialog__gallery > img { height: min(36dvh,320px); }
+  .neni-quick-dialog__thumbnails button > img { height: 100%; }
+}
