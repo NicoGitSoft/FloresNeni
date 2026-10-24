@@ -17,7 +17,7 @@ Conseguir primero un vertical de e-commerce comprobable:
 
 ## Versiones objetivo
 
-- Node >= 22.22.0 (recomendado local: Node 22 LTS actualizado).
+- Node >= 22.22.0; baseline de desarrollo/CI: Node 22.23.4 LTS.
 - Medusa 2.22.1.
 - transbank-sdk 6.1.1.
 - PostgreSQL 15 soportado para este slice.
@@ -84,3 +84,20 @@ compensación durante rollback.
 - Production/Availability/reservas.
 - Shipping real por comuna/tarifa.
 - Redis Workflow Engine/Event Bus/locking de producción.
+
+## QA y productividad
+
+La matriz de pruebas vive en `docs/QA_TEST_MATRIX.md`.
+
+Principio:
+- unit/build/config deterministas → CI;
+- Order local → smoke;
+- browser E2E → local;
+- Webpay sandbox externo → release gate, no CI.
+
+Comandos principales:
+- `pnpm neni:dev:up`
+- `pnpm neni:dev:status`
+- `pnpm neni:qa`
+- `pnpm neni:qa:browser`
+- `pnpm neni:qa:webpay`

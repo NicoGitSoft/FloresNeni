@@ -24,8 +24,22 @@
     "neni:test:inventory": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules pnpm --filter @dtc/backend exec jest --runInBand --runTestsByPath src/utils/inventory/__tests__/material-buildable-quantity.unit.spec.ts",
     "neni:bootstrap:payments": "pnpm --filter @dtc/backend exec medusa exec ./src/scripts/bootstrap-payment-providers.ts",
     "neni:verify:payments": "pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-payment-readiness.ts",
-    "neni:test:webpay": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules pnpm --filter @dtc/backend exec jest --runInBand --runTestsByPath src/modules/webpay/__tests__/helpers.unit.spec.ts",
-    "neni:payments:doctor": "bash scripts/neni-payment-doctor.sh"
+    "neni:test:webpay": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules pnpm --filter @dtc/backend exec jest --runInBand --runTestsByPath src/modules/webpay/__tests__/helpers.unit.spec.ts src/modules/webpay/__tests__/provider-options.unit.spec.ts",
+    "neni:payments:doctor": "bash scripts/neni-payment-doctor.sh",
+    "neni:dev:up": "bash scripts/neni-dev-up.sh",
+    "neni:dev:status": "bash scripts/neni-dev-status.sh",
+    "neni:e2e:order": "bash scripts/neni-e2e-order.sh",
+    "neni:e2e:browser": "bash scripts/neni-e2e-browser.sh",
+    "neni:e2e:webpay": "NENI_WEBPAY_SCENARIO=approved bash scripts/neni-e2e-webpay.sh",
+    "neni:qa": "bash scripts/neni-qa-local.sh",
+    "neni:qa:browser": "bash scripts/neni-qa-local.sh --browser",
+    "neni:qa:webpay": "bash scripts/neni-qa-local.sh --browser --webpay",
+    "neni:scripts:check": "bash -n scripts/*.sh",
+    "neni:qa:fast": "pnpm neni:scripts:check && pnpm neni:test:checkout && pnpm neni:test:inventory && pnpm neni:test:webpay && pnpm neni:check",
+    "neni:prepush": "bash scripts/neni-prepush.sh",
+    "neni:e2e:webpay:inspect": "NENI_WEBPAY_SCENARIO=approved NENI_WEBPAY_MODE=inspect bash scripts/neni-e2e-webpay.sh",
+    "neni:e2e:webpay:rejected": "NENI_WEBPAY_SCENARIO=rejected bash scripts/neni-e2e-webpay.sh",
+    "neni:e2e:webpay:cancel": "NENI_WEBPAY_SCENARIO=cancel bash scripts/neni-e2e-webpay.sh"
   },
   "pnpm": {
     "overrides": {
