@@ -10,6 +10,7 @@ export default function ProductGrid() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selected, setSelected] = useState<MedusaProduct | null>(null)
+  const [imageIndex, setImageIndex] = useState(0)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const openerRef = useRef<HTMLButtonElement | null>(null)
   const { addItem, busy, error: cartError } = useCart()
@@ -42,6 +43,7 @@ export default function ProductGrid() {
     if (!dialog) return
     if (selected && !dialog.open) dialog.showModal()
     if (!selected && dialog.open) dialog.close()
+    setImageIndex(0)
   }, [selected])
 
   function openProduct(product: MedusaProduct, trigger: HTMLButtonElement) {
@@ -64,6 +66,8 @@ export default function ProductGrid() {
     openerRef.current?.focus()
   }
 
+  const quickImages = selected ? Array.from(new Set([getProductImage(selected), selected.metadata?.image_2].filter((image): image is string => Boolean(image)))) : []
+
   if (loading) return <p className="catalog-feedback" role="status">Estamos preparando las flores del taller…</p>
   if (error) return <p className="catalog-feedback" role="alert">No pudimos cargar el catálogo desde el taller. Verifica la conexión con Medusa y vuelve a intentarlo.</p>
   if (!products.length) return <p className="catalog-feedback">Pronto florecerán nuevos diseños por aquí.</p>
@@ -82,6 +86,7 @@ export default function ProductGrid() {
                 aria-label={`Ver detalles de ${product.title}`}
                 onClick={event => openProduct(product, event.currentTarget)}>
                 {image && <img src={image} alt={product.title} loading="lazy" decoding="async" />}
+                {product.metadata?.image_2 && product.metadata.image_2 !== image && <img className="product-card__secondary" src={product.metadata.image_2} alt="" loading="lazy" decoding="async" />}
                 <span className="product-card__edition">{index < 3 ? "DESTACADO DEL TALLER" : "HECHO A MANO"}</span>
                 <span className="product-card__preview">Ver este diseño ↗</span>
               </button>
@@ -113,7 +118,18 @@ export default function ProductGrid() {
                 onClick={() => dialogRef.current?.close()}>×</button>
             </div>
             <div className="neni-quick-dialog__content">
-              {getProductImage(selected) && <img src={getProductImage(selected)} alt={selected.title} />}
+              <div className="neni-quick-dialog__gallery">
+                {quickImages.length > 0 && <img src={quickImages[imageIndex] ?? quickImages[0]} alt={selected.title} />}
+                {quickImages.length > 1 && (
+                  <div className="neni-quick-dialog__thumbnails" aria-label="Fotografías del diseño">
+                    {quickImages.map((image, index) => (
+                      <button key={image} type="button" aria-label={`Ver fotografía ${index + 1} de ${quickImages.length}`} aria-pressed={imageIndex === index} onClick={() => setImageIndex(index)}>
+                        <img src={image} alt="" loading="lazy" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className="neni-quick-dialog__text">
                 <h2 id="neni-quick-title">{selected.title}</h2>
                 {selected.metadata?.composition && <p className="composition">{selected.metadata.composition}</p>}
