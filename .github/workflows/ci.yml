@@ -76,7 +76,9 @@ jobs:
         run: |
           pnpm --filter @dtc/backend exec medusa db:migrate
           pnpm neni:bootstrap
+          pnpm neni:bootstrap:payments
           pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-neni-bootstrap.ts
+          pnpm neni:verify:payments
           NENI_INVENTORY_DEMO_EXPECT=absent pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-inventory-bom-demo.ts
           pnpm neni:bootstrap:inventory-demo
           pnpm --filter @dtc/backend exec medusa exec ./src/scripts/verify-inventory-bom-demo.ts
@@ -98,6 +100,9 @@ jobs:
 
       - name: Run inventory and BOM unit tests
         run: pnpm neni:test:inventory
+
+      - name: Run Webpay unit tests
+        run: pnpm neni:test:webpay
 
       - name: Run Neni checks
         run: pnpm neni:check

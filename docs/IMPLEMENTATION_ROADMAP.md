@@ -390,3 +390,19 @@ Migrar fotografías desde `public/` hacia almacenamiento administrable:
 Nunca cobrar un pedido hasta poder garantizar:
 
 `precio + materiales + capacidad + cupo + fecha`
+
+## Payment vertical slice — Webpay v1
+
+Objetivo inmediato: cerrar el happy path e-commerce antes de seguir
+sobreconstruyendo Availability.
+
+- [ ] Medusa 2.22.1 + Node >=22.22.0 validados.
+- [ ] Shipping Method dev para despacho/retiro.
+- [ ] Payment Collection + `pp_system_default` → Order real.
+- [ ] Payment Provider `pp_webpay_webpay`.
+- [ ] Webpay Plus integration create → redirect → return → commit.
+- [ ] Guard monto Payment Session == Cart total.
+- [ ] Order success.
+- [ ] Refund smoke.
+- [ ] Credenciales/HTTPS de producción (posterior).
+- [ ] Availability/reservas/locking productivo (posterior).
