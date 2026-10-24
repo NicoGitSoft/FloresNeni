@@ -97,7 +97,7 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
             git diff --check "origin/${GITHUB_BASE_REF}...HEAD"
           else
-            git diff --check "HEAD^" HEAD
+            git diff --check "origin/v2...HEAD"
           fi
 
       - name: Run checkout unit tests
