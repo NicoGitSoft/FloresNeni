@@ -72,6 +72,9 @@ jobs:
       - name: Install frozen lockfile
         run: pnpm install --frozen-lockfile
 
+      - name: Frontend v3 smoke checks
+        run: pnpm neni:test:frontend-v3
+
       - name: Smoke test clean bootstrap twice
         run: |
           pnpm --filter @dtc/backend exec medusa db:migrate
