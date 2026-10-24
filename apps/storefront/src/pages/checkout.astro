@@ -4,14 +4,19 @@ import "../styles/storefront.css"
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es-CL">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Completa tus datos para continuar con tu pedido Neni." />
-    <title>Checkout | Neni — Taller de Flores</title>
+
+    <meta name="theme-color" content="#f7f2eb" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>Tu pedido | Neni — Taller de Flores</title>
   </head>
-  <body class="neni-v3">
+  <body class="neni-v3">\n    <a class="skip-link" href="#checkout-main">Ir al formulario</a>
     <header class="site-header checkout-site-header">
       <a class="brand" href="/" aria-label="Neni Taller de Flores">
         <img src="/images/Logos/Neni_transparente_vino.png" alt="Neni Taller de Flores" />
@@ -20,6 +25,6 @@ import "../styles/storefront.css"
         <a href="/">Volver a la tienda</a>
       </nav>
     </header>
-    <CheckoutPage client:load />
+    <main id="checkout-main"><CheckoutPage client:load /></main>
   </body>
 </html>
