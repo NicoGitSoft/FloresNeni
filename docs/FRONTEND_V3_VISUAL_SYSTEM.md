@@ -1,6 +1,6 @@
 # Neni Frontend v3 — Sistema visual B3 y criterios de aceptación
 
-**Revisión:** 2026-10-24. **Rama Git:** `v3`. **Base:** `v2`. **Estado:** implementación iterativa; requiere QA en navegadores reales.  
+**Revisión:** 2026-10-24. **Rama Git:** `v3`. **Base:** `v2`. **Estado:** implementación iterativa; requiere QA en navegadores reales.
 Este documento es la fuente de verdad de **estética/UX** y no una descripción del negocio ni del modelo de comercio.
 
 ## Norte creativo
