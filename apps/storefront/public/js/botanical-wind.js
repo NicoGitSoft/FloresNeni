@@ -122,6 +122,7 @@ if (host instanceof HTMLElement) {
       reduceMotion.removeEventListener("change", onMotion);
       document.removeEventListener("visibilitychange", onVisibility);
       host.removeEventListener("pointermove", onPointerMove);
+      host.removeEventListener("pointerdown", onPointerMove);
       host.removeEventListener("pointerleave", onPointerLeave);
     };
     resize();
@@ -129,10 +130,9 @@ if (host instanceof HTMLElement) {
     resizeObserver.observe(host);
     reduceMotion.addEventListener("change", onMotion);
     document.addEventListener("visibilitychange", onVisibility);
-    if (!coarsePointer.matches) {
-      host.addEventListener("pointermove", onPointerMove, { passive: true });
-      host.addEventListener("pointerleave", onPointerLeave);
-    }
+    host.addEventListener("pointermove", onPointerMove, { passive: true });
+    host.addEventListener("pointerdown", onPointerMove, { passive: true });
+    host.addEventListener("pointerleave", onPointerLeave);
     window.addEventListener("pagehide", onPageHide, { once: true });
     sync();
   }
