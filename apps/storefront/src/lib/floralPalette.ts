@@ -53,7 +53,7 @@ export function selectFloralTone(
   return {
     wash: `rgb(${mix(r, 250, .82)} ${mix(g, 246, .82)} ${mix(b, 239, .82)})`,
     frame: `rgb(${mix(r, 246, .47)} ${mix(g, 235, .47)} ${mix(b, 223, .47)})`,
-    ink: `rgb(${mix(r, 73, .32)} ${mix(g, 49, .32)} ${mix(b, 53, .32)})`
+    ink: `rgb(${mix(r, 73, .77)} ${mix(g, 49, .77)} ${mix(b, 53, .77)})`
   }
 }
 
