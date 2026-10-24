@@ -193,7 +193,25 @@ const key=x=>`${x.tag} ${x.type} ${x.name} ${x.id} ${x.placeholder} ${x.aria} ${
 const visible=a=>a.filter(x=>x.visible)
 const find=(a,res)=>a.find(x=>x.visible&&res.some(r=>r.test(key(x))))
 const findEditable=(a,res)=>a.find(x=>x.visible&&["INPUT","TEXTAREA"].includes(x.tag)&&!["hidden","button","submit","radio","checkbox"].includes((x.type||"").toLowerCase())&&res.some(r=>r.test(key(x))))
-const findButton=(a,res)=>a.find(x=>x.visible&&(x.tag==="BUTTON"||(x.tag==="INPUT"&&["button","submit"].includes((x.type||"").toLowerCase())))&&res.some(r=>r.test(key(x))))
+const findButton=(a,res)=>a.find(x=>{
+  if(
+    !x.visible ||
+    !(
+      x.tag==="BUTTON" ||
+      (x.tag==="INPUT"&&["button","submit"].includes((x.type||"").toLowerCase()))
+    )
+  )return false
+
+  const composite=key(x)
+  const visibleText=(x.text||"").trim().toLowerCase()
+
+  return res.some(r=>{
+    r.lastIndex=0
+    if(r.test(composite))return true
+    r.lastIndex=0
+    return r.test(visibleText)
+  })
+})
 
 async function click(i){
   return ev(`(() => {const e=[...document.querySelectorAll("input,button,select,textarea,[contenteditable=true]")][${i}];if(!e)return false;e.click();return true})()`)
@@ -308,15 +326,6 @@ if(scenario==="cancel"){
     process.exit(0)
   }
 
-  // El emulador puede pedir Continuar después de SOLO el número.
-  let a=await controls()
-  let cont=findButton(a,[/^continuar$/,/^siguiente$/,/^pagar$/])
-  if(cont){
-    log(`Click después de número: ${cont.text}`)
-    await click(cont.i)
-    await sleep(500)
-  }
-
   // 3. State machine de pantallas: details / auth / approve / final.
   const deadline=Date.now()+45000
   let detailsFilled=false
@@ -346,40 +355,169 @@ if(scenario==="cancel"){
       process.exit(0)
     }
 
-    // Datos de tarjeta adicionales: CVV / vencimiento.
-    const cvv=findEditable(all,[/\bcvv\b/,/\bcvc\b/,/seguridad/])
-    const exp=findEditable(all,[/venc/,/expir/,/fecha.*tarjeta/,/expiry/])
-    if((cvv||exp)&&!detailsFilled){
-      log(`Pantalla detalles tarjeta: cvv=${!!cvv} exp=${!!exp}`)
-      if(cvv)await setValue(cvv.i,cvvValue)
-      if(exp){
-        const v=exp.type==="month"?"2028-12":exp.maxLength===4?"1228":"12/28"
-        await setValue(exp.i,v)
+    // Detectar explícitamente la pantalla de tarjeta.
+    // Webpay usa card-cvv como input type=password; eso NO es una clave bancaria.
+    const cardNumber=findEditable(all,[
+      /card-number/,
+      /numero.*tarjeta/,
+      /n[uú]mero.*tarjeta/,
+      /card.?number/,
+      /cc-number/
+    ])
+    const cvv=findEditable(all,[
+      /\\bcvv\\b/,
+      /\\bcvc\\b/,
+      /seguridad/,
+      /card-cvv/
+    ])
+    const exp=findEditable(all,[
+      /card-exp/,
+      /cc-exp/,
+      /venc/,
+      /expir/,
+      /fecha.*tarjeta/,
+      /expiry/
+    ])
+
+    const cardScreen=Boolean(
+      cardNumber ||
+      cvv ||
+      exp ||
+      /n[uú]mero de tarjeta|fecha de expiraci[oó]n|\\bcvv\\b/.test(text)
+    )
+
+    // Rechazo terminal mostrado por el formulario de tarjeta.
+    if(/intenta pagar con otra tarjeta/.test(text)){
+      if(scenario==="rejected"){
+        await shot("neni-webpay-05-rejected")
+        log("REJECTED esperado detectado en pantalla de tarjeta.")
+        console.log(JSON.stringify({
+          status:"PASS",
+          scenario,
+          result:"REJECTED",
+          cart_id:expectedCart,
+          url:u
+        },null,2))
+        process.exit(0)
       }
-      detailsFilled=true
-      await shot("neni-webpay-03-details")
-      const next=findButton(await controls(),[/^continuar$/,/^pagar$/,/^siguiente$/,/^aceptar$/])
-      if(next){log(`Click detalles: ${next.text}`);await click(next.i)}
-      await sleep(700)
+
+      await shot("neni-webpay-card-rejected")
+      throw new Error("La tarjeta approved fue rechazada por Webpay.")
+    }
+
+    // Mientras sigamos en tarjeta, nunca reinterpretar card-cvv como password bancario.
+    if(cardScreen){
+      if((cvv||exp)&&!detailsFilled){
+        log(`Pantalla detalles tarjeta: cvv=${!!cvv} exp=${!!exp}`)
+
+        if(cvv)await setValue(cvv.i,cvvValue)
+
+        if(exp){
+          const v=
+            exp.type==="month"
+              ?"2028-12"
+              :exp.maxLength===4
+                ?"1228"
+                :"12/28"
+          await setValue(exp.i,v)
+        }
+
+        detailsFilled=true
+        await shot("neni-webpay-03-details")
+        await sleep(500)
+      }
+
+      // Puede ser "Continuar" o "Pagar", y puede renderizarse después de completar
+      // los campos. findButton compara también el texto visible.
+      const cardControls=await controls()
+      const pay=findButton(cardControls,[
+        /^pagar$/,
+        /^continuar$/,
+        /^siguiente$/
+      ])
+
+      if(pay){
+        log(`Click tarjeta: ${pay.text}`)
+        await click(pay.i)
+        await sleep(900)
+        continue
+      }
+
+      await summary("CARD")
+      await sleep(500)
       continue
     }
 
-    // Banco.
-    let rut=findEditable(all,[/\brut\b/,/usuario/,/identific/])
-    let pass=all.find(x=>x.visible&&x.tag==="INPUT"&&x.type==="password") ||
-             findEditable(all,[/clave/,/password/,/contrase/])
-    if((rut||pass)&&!authFilled){
-      const editables=visible(all).filter(x=>["INPUT","TEXTAREA"].includes(x.tag)&&!["hidden","button","submit","radio","checkbox"].includes((x.type||"").toLowerCase()))
-      rut=rut||editables.find(x=>x!==pass)
-      pass=pass||editables.find(x=>x!==rut)
+    // Banco: sólo clasificar como autenticación si ya salimos de tarjeta y la
+    // página tiene señales explícitas de identidad/clave.
+    const bankContext=
+      /(?:\\brut\\b|\\bclave\\b|contrase|autentic|banco|\\busuario\\b)/.test(text)
+
+    if(bankContext&&!authFilled){
+      let rut=findEditable(all,[
+        /\\brut\\b/,
+        /\\busuario\\b/,
+        /identific/
+      ])
+
+      let pass=findEditable(all,[
+        /\\bclave\\b/,
+        /password/,
+        /contrase/
+      ])
+
+      const bankEditables=visible(all).filter(x=>{
+        if(!["INPUT","TEXTAREA"].includes(x.tag))return false
+        if(["hidden","button","submit","radio","checkbox"].includes(
+          (x.type||"").toLowerCase()
+        ))return false
+
+        return !/card-number|card-cvv|card-exp|cc-number|cc-exp|\\bcvv\\b|\\bcvc\\b/.test(key(x))
+      })
+
+      rut=rut||bankEditables.find(x=>x!==pass)
+      pass=
+        pass ||
+        bankEditables.find(
+          x=>
+            x!==rut &&
+            (
+              (x.type||"").toLowerCase()==="password" ||
+              /\\bclave\\b|password|contrase/.test(key(x))
+            )
+        ) ||
+        bankEditables.find(x=>x!==rut)
+
       if(rut&&pass){
-        log(`Autenticación banco: rut=${rut.id||rut.name||rut.placeholder} pass=${pass.id||pass.name||pass.placeholder}`)
-        await setValue(rut.i,rut.maxLength===9?"111111111":"11.111.111-1")
+        log(
+          `Autenticación banco: rut=${rut.id||rut.name||rut.placeholder} ` +
+          `pass=${pass.id||pass.name||pass.placeholder}`
+        )
+
+        await setValue(
+          rut.i,
+          rut.maxLength===9
+            ?"111111111"
+            :"11.111.111-1"
+        )
         await setValue(pass.i,"123")
+
         authFilled=true
         await shot("neni-webpay-04-auth")
-        const next=findButton(await controls(),[/aceptar/,/ingresar/,/continuar/,/autorizar/,/entrar/])
-        if(next){log(`Click autenticación: ${next.text}`);await click(next.i)}
+
+        const next=findButton(await controls(),[
+          /aceptar/,
+          /ingresar/,
+          /continuar/,
+          /autorizar/,
+          /entrar/
+        ])
+
+        if(next){
+          log(`Click autenticación: ${next.text}`)
+          await click(next.i)
+        }
+
         await sleep(800)
         continue
       }
@@ -387,7 +525,13 @@ if(scenario==="cancel"){
 
     // Pantalla de aprobación/rechazo posterior a autenticación.
     if(authFilled&&!approveClicked){
-      const approve=findButton(all,[/^aceptar$/,/^aprobar$/,/^autorizar$/,/^continuar$/])
+      const approve=findButton(all,[
+        /^aceptar$/,
+        /^aprobar$/,
+        /^autorizar$/,
+        /^continuar$/
+      ])
+
       if(approve){
         log(`Click aprobación: ${approve.text}`)
         approveClicked=true
@@ -397,8 +541,12 @@ if(scenario==="cancel"){
       }
     }
 
-    // Continuar genérico, como pantalla intermedia de cuotas/tipo de tarjeta.
-    const generic=findButton(all,[/^continuar$/,/^siguiente$/])
+    // Pantallas intermedias posteriores a tarjeta/banco.
+    const generic=findButton(all,[
+      /^continuar$/,
+      /^siguiente$/
+    ])
+
     if(generic){
       log(`Click intermedio: ${generic.text}`)
       await click(generic.i)

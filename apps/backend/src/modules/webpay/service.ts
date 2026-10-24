@@ -47,7 +47,6 @@ import type { WebpayOptions, WebpayPaymentData } from "./types"
 
 type InjectedDependencies = {
   logger: Logger
-  webpayTransaction?: WebpayTransactionClient
 }
 
 function record(data: Record<string, unknown> | undefined): WebpayPaymentData {
@@ -84,7 +83,11 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
   protected options_: WebpayOptions
   protected transaction_: WebpayTransactionClient
 
-  constructor(container: InjectedDependencies, options: WebpayOptions) {
+  constructor(
+    container: InjectedDependencies,
+    options: WebpayOptions,
+    transaction?: WebpayTransactionClient
+  ) {
     super(container, options)
     this.logger_ = container.logger
     this.options_ = {
@@ -92,7 +95,7 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
       ...options,
     }
     this.transaction_ =
-      container.webpayTransaction ?? createWebpayTransaction(this.options_)
+      transaction ?? createWebpayTransaction(this.options_)
   }
 
   static validateOptions(options: Record<string, unknown>): void {

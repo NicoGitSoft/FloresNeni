@@ -29,8 +29,9 @@ function createService(transaction: Partial<WebpayTransactionClient>) {
 
   const logger = { error: jest.fn() } as unknown as Logger
   const provider = new WebpayPaymentProviderService(
-    { logger, webpayTransaction: client },
-    { environment: "integration", return_url: "http://localhost/return" }
+    { logger },
+    { environment: "integration", return_url: "http://localhost/return" },
+    client
   )
 
   return { provider, client, logger }
@@ -41,6 +42,35 @@ async function authorize(provider: WebpayPaymentProviderService) {
     data: paymentData,
   } as Parameters<WebpayPaymentProviderService["authorizePayment"]>[0])
 }
+
+describe("Webpay provider runtime construction", () => {
+  test("does not resolve the test-only transaction client from the Awilix cradle", () => {
+    const logger = { error: jest.fn() } as unknown as Logger
+    const cradle = new Proxy(
+      { logger },
+      {
+        get(target, property, receiver) {
+          if (Reflect.has(target, property)) {
+            return Reflect.get(target, property, receiver)
+          }
+
+          throw new Error(`Could not resolve '${String(property)}'`)
+        },
+      }
+    )
+
+    expect(
+      () =>
+        new WebpayPaymentProviderService(
+          cradle,
+          {
+            environment: "integration",
+            return_url: "http://localhost/return",
+          }
+        )
+    ).not.toThrow()
+  })
+})
 
 describe("Webpay authorization recovery", () => {
   test("does not recommit when remote status is already AUTHORIZED", async () => {
