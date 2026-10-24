@@ -27,7 +27,7 @@ Un taller de flores de autor, íntimo y artesanal: acuarela, papel marfil, tonos
 
 ### Composición botánica y movimiento
 - Ilustración `atelier-bloom.svg`: **tallo corto, exactamente una hoja a izquierda y otra a derecha**, sin tercera rama.
-- Hojas/pétalos con color lavado y densidad baja. Viento en **hero, catálogo y vista rápida**; en touch y mouse. El contenido y los botones siempre quedan por encima del viento.
+- Hojas/pétalos con color lavado y densidad baja. Viento en **hero, catálogo, historia del taller, cierre editorial y vista rápida**; en touch y mouse. El contenido y los botones siempre quedan por encima del viento.
 - Presupuesto contenido: en móvil 5 hojas hero, 7 catálogo, 3 modal (máximo de las escenas visibles); en escritorio 14/18/7. `requestAnimationFrame` y `IntersectionObserver` con pausa en pestaña oculta, modal cerrado y `prefers-reduced-motion`; escena secundaria limitada a ~30 FPS.
 - Ornamentos estáticos discretos en espacios vacíos; nunca obstaculizar fotografía, lectura o controles.
 
