@@ -10,7 +10,7 @@ Actualizado: 2026-10-24 · Rama: `v3` · Base: `v2`
 | Lámina botánica ilustrada (SVG local) | Implementado | `public/images/botanical/atelier-bloom.svg` |
 | Motor de viento Canvas 2D, presupuesto móvil y suspensión | Implementado, falta QA visual real | `public/js/botanical-wind.js` |
 | Tarjetas con hover/focus, precio autoritativo Medusa | Implementado | `src/components/ProductGrid.tsx` |
-| Quick view modal, sincronización `?producto=handle`, navegación atrás | Implementado, falta QA navegador móvil/teclado | `src/components/ProductGrid.tsx` |
+| Quick view modal, galería ligera con hasta dos fotos, sincronización `?producto=handle`, navegación atrás | Implementado, falta QA navegador móvil/teclado | `src/components/ProductGrid.tsx` |
 | Carrito modal, portal al header, cantidades, error y CTA | Implementado | `src/components/Storefront.tsx` |
 | Checkout con estilo v3, sin viento | Implementado (presentación solamente) | `src/pages/checkout.astro` |
 | Root React 18 innecesario retirado y lockfile consistente | Implementado, validar pnpm frozen en CI | `package.json`, `pnpm-lock.yaml` |
@@ -84,7 +84,7 @@ En GitHub Actions, el gate `v3` debe ejecutar los smoke tests, las pruebas exist
 
 ## Trabajo deliberadamente pendiente
 
-- Galería multiimagen accesible con Embla cuando existan activos finales.
+- Galería actual de hasta dos imágenes por producto implementada con botones nativos y crossfade en tarjeta. Ampliar a Embla únicamente cuando se requieran gestos de swipe, más fotos y navegación avanzada.
 - Vista de detalle SSR indexable con canonical permanente (la actual vista rápida enlazada por query es mejora de UX, **no sustituto de una ficha SEO**).
 - Visual snapshots con capturas verificadas y Lighthouse a 3 resoluciones.
 - Revisión profesional de fotos, arte final de acuarela/sprites y accesibilidad WCAG en navegadores reales.
