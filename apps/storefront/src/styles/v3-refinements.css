@@ -1,4 +1,4 @@
-/* Neni v3 / B3: visual specification from live mobile and desktop review.
+/* Neni v3 / V3: visual specification from live mobile and desktop review.
  * Scoped overrides: old .product-card button selector must NEVER circle media. */
 body.neni-v3 {
   --neni-floral-ivory: #fbf5ed;

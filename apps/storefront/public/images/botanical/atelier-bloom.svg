@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 380" fill="none" aria-hidden="true">
-  <!-- B3: short stem and EXACTLY two symmetrical opposite leaves. -->
+  <!-- V3: short stem and EXACTLY two symmetrical opposite leaves. -->
   <g stroke="#79515A" stroke-linecap="round" stroke-linejoin="round" opacity=".65">
     <path d="M180 124 C172 173 193 214 184 260 C180 283 176 305 179 341" stroke-width="2.35"/>
     <path d="M183 263 C145 238 118 223 92 226 M187 263 C228 240 251 223 274 224" stroke-width="1.8"/>

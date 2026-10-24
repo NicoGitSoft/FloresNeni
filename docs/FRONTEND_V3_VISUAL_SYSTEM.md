@@ -1,4 +1,4 @@
-# Neni Frontend v3 — Sistema visual B3 y criterios de aceptación
+# Neni Frontend v3 — Sistema visual V3 y criterios de aceptación
 
 **Revisión:** 2026-10-24. **Rama Git:** `v3`. **Base:** `v2`. **Estado:** implementación iterativa; requiere QA en navegadores reales.
 Este documento es la fuente de verdad de **estética/UX** y no una descripción del negocio ni del modelo de comercio.
@@ -7,7 +7,7 @@ Este documento es la fuente de verdad de **estética/UX** y no una descripción 
 Un taller de flores de autor, íntimo y artesanal: acuarela, papel marfil, tonos vino/grafito/verde profundo, fotografías auténticas, composición editorial con respiro. Cada interacción debe sentirse natural; nada debe recordar a una plantilla genérica o a una interfaz de juego.
 
 ### Identidad
-- **Logo oficial:** el logotipo proporcionado por la marca muestra **Neni en verde pintado** y **taller de flores en rosa coral**, rematado con ranúnculo. Se debe usar el archivo **con transparencia real** en cabecera; no el logotipo antiguo circular como identificador principal. El master original se recibió en la revisión B3. La copia web transparente y recortada **sí está versionada** en `public/images/Logos/Neni_oficial_acuarela.webp` (560×351px, WebP transparente de 51.7 KB). Conservar el PNG maestro de 1536×1024 fuera de Git como fuente de identidad; esta copia web es una optimización para el header, no un reemplazo del original de impresión.
+- **Logo oficial:** el logotipo proporcionado por la marca muestra **Neni en verde pintado** y **taller de flores en rosa coral**, rematado con ranúnculo. Se debe usar el archivo **con transparencia real** en cabecera; no el logotipo antiguo circular como identificador principal. El master original se recibió en la revisión V3. La copia web transparente y recortada **sí está versionada** en `public/images/Logos/Neni_oficial_acuarela.webp` (560×351px, WebP transparente de 51.7 KB). Conservar el PNG maestro de 1536×1024 fuera de Git como fuente de identidad; esta copia web es una optimización para el header, no un reemplazo del original de impresión.
 - El logo se mantiene reconocible y legible en teléfono; no debe crecer hasta competir con el catálogo ni quedar reducido a una miniatura irreconocible.
 - Encabezados Cormorant Garamond, cuerpo DM Sans, con fallbacks; no alterar importes o precios desde CSS.
 
@@ -51,7 +51,7 @@ Un taller de flores de autor, íntimo y artesanal: acuarela, papel marfil, tonos
 7. Reducir movimiento en el SO elimina la animación y mantiene todo usable.
 8. Inspeccionar Lighthouse, LCP, CLS y CPU móvil antes de dar el PR por aprobado.
 
-## Cambios de implementación B3
+## Cambios de implementación V3
 - `src/lib/floralPalette.ts`: algoritmo de paleta floral dependiente de fotografía.
 - `src/components/ProductGrid.tsx`: marco doble, paleta por producto, vista rápida enriquecida.
 - `src/styles/v3-refinements.css`: parche acotado para evitar colisión de CSS con radios circulares y añadir capas cromáticas.
