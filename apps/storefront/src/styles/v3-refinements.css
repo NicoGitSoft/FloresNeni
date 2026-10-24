@@ -57,7 +57,7 @@ body.neni-v3 .catalog::after {
   position: sticky;
   top: 82px;
   height: min(88dvh, 850px);
-  margin-bottom: min(-88dvh, -850px);
+  margin-bottom: calc(-1 * min(88dvh, 850px));
   opacity: .82;
   z-index: 0;
 }
