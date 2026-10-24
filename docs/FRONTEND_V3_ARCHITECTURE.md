@@ -1,8 +1,8 @@
 # Frontend v3 — Botanical Editorial System
 
-Status: architecture baseline  
-Branch: `v3`  
-Base: stable `v2` at `49e88fe`  
+Status: architecture baseline
+Branch: `v3`
+Base: stable `v2` at `49e88fe`
 Scope: storefront UX, art direction, motion system and presentation architecture.
 
 ## Why v3 exists
