@@ -1,6 +1,7 @@
 ---
 import Storefront from "../components/Storefront"
 import "../styles/storefront.css"
+import "../styles/v3-refinements.css"
 ---
 
 <!doctype html>
@@ -68,7 +69,8 @@ import "../styles/storefront.css"
 
       <div class="manifesto-strip" aria-label="Nuestra filosofía"><span>Flor a flor</span><i aria-hidden="true">✳</i><span>sin prisa</span><i aria-hidden="true">✳</i><span>con intención</span></div>
 
-      <section class="catalog" id="flores" aria-labelledby="catalog-title">
+      <section class="catalog" id="flores" aria-labelledby="catalog-title" data-floral-scene>
+        <canvas class="floral-scene__canvas" aria-hidden="true"></canvas>
         <header class="section-heading">
           <div class="section-heading__inner">
             <div><span class="section-kicker">01 / NUESTRA COLECCIÓN</span><h2 id="catalog-title">Pequeñas <em>maravillas</em> de temporada.</h2></div>
@@ -109,6 +111,7 @@ import "../styles/storefront.css"
       <div class="footer__bottom"><span>© {new Date().getFullYear()} Neni — Taller de flores</span><span>Hecho con amor, flor a flor.</span></div>
     </footer>
     <script is:inline type="module" src="/js/botanical-wind.js"></script>
+    <script is:inline type="module" src="/js/floral-scenes.js"></script>
     <script is:inline>
       document.querySelectorAll(".mobile-nav a").forEach(link => {
         link.addEventListener("click", () => link.closest("details")?.removeAttribute("open"));
