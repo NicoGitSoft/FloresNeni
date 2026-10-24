@@ -7,7 +7,7 @@ Este documento es la fuente de verdad de **estética/UX** y no una descripción 
 Un taller de flores de autor, íntimo y artesanal: acuarela, papel marfil, tonos vino/grafito/verde profundo, fotografías auténticas, composición editorial con respiro. Cada interacción debe sentirse natural; nada debe recordar a una plantilla genérica o a una interfaz de juego.
 
 ### Identidad
-- **Logo oficial:** el logotipo proporcionado por la marca muestra **Neni en verde pintado** y **taller de flores en rosa coral**, rematado con ranúnculo. Se debe usar el archivo **con transparencia real** en cabecera; no el logotipo antiguo circular como identificador principal. El archivo original se recibió en la revisión B3 y requiere control del master gráfico/altas resoluciones.
+- **Logo oficial:** el logotipo proporcionado por la marca muestra **Neni en verde pintado** y **taller de flores en rosa coral**, rematado con ranúnculo. Se debe usar el archivo **con transparencia real** en cabecera; no el logotipo antiguo circular como identificador principal. El master original se recibió en la revisión B3. La copia web transparente y recortada **sí está versionada** en `public/images/Logos/Neni_oficial_acuarela.webp` (240×151px, WebP de 13.8 KB). Conservar el PNG maestro de 1536×1024 fuera de Git como fuente de identidad; esta copia web es una optimización para el header, no un reemplazo del original de impresión.
 - El logo se mantiene reconocible y legible en teléfono; no debe crecer hasta competir con el catálogo ni quedar reducido a una miniatura irreconocible.
 - Encabezados Cormorant Garamond, cuerpo DM Sans, con fallbacks; no alterar importes o precios desde CSS.
 
@@ -42,7 +42,7 @@ Un taller de flores de autor, íntimo y artesanal: acuarela, papel marfil, tonos
 - Respeto de movimiento reducido, buen contraste, imágenes con alt descriptivo y adornos decorativos con alt vacío.
 
 ## Pruebas de aceptación (pendientes de verificación visual)
-1. El logotipo oficial está en la cabecera y sin bloque blanco detrás, con color verde/coral.
+1. El logotipo oficial `Neni_oficial_acuarela.webp` está en la cabecera y sin bloque blanco detrás, con verde/coral.
 2. Las 11 fotos del catálogo se ven **rectangulares** en móvil y escritorio. Revisar particularmente Mirasol, Tríada Amarilla, Mix del Día y Romántico de 12.
 3. El fondo/marco de cada tarjeta difiere si cambia el ramo: rojizos/rosas/amarillos y una mezcla floral. Un fondo azul de estudio no debe necesariamente ganar el cálculo.
 4. La sección catálogo **sí muestra hojas tenues** en el background. Tocar o arrastrar el dedo afecta el viento sin bloquear scroll.
