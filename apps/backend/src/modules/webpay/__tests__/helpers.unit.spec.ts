@@ -18,6 +18,10 @@ describe("Webpay helpers", () => {
     expect(() => toClpIntegerAmount(0)).toThrow(MedusaError)
     expect(() => toClpIntegerAmount(-1)).toThrow(MedusaError)
     expect(() => toClpIntegerAmount(10.5)).toThrow(MedusaError)
+    expect(() => toClpIntegerAmount(Number.POSITIVE_INFINITY)).toThrow(
+      MedusaError
+    )
+    expect(() => toClpIntegerAmount(true)).toThrow(MedusaError)
   })
 
   test("accepts only CLP", () => {

@@ -29,10 +29,15 @@ import {
   PaymentActions,
 } from "@medusajs/framework/utils"
 
-import { createWebpayTransaction } from "./client"
+import {
+  createWebpayTransaction,
+  type WebpayCreateResult,
+  type WebpayTransactionClient,
+} from "./client"
 import {
   assertApprovedCommit,
   assertClpCurrency,
+  assertTransactionIdentity,
   createBuyOrder,
   createSessionId,
   mapWebpayStatus,
@@ -42,10 +47,30 @@ import type { WebpayOptions, WebpayPaymentData } from "./types"
 
 type InjectedDependencies = {
   logger: Logger
+  webpayTransaction?: WebpayTransactionClient
 }
 
 function record(data: Record<string, unknown> | undefined): WebpayPaymentData {
   return (data ?? {}) as WebpayPaymentData
+}
+
+function transactionIdentity(data: WebpayPaymentData) {
+  if (
+    typeof data.amount !== "number" ||
+    typeof data.buy_order !== "string" ||
+    typeof data.session_id !== "string"
+  ) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      "La sesión Webpay no contiene una identidad de transacción válida."
+    )
+  }
+
+  return {
+    amount: toClpIntegerAmount(data.amount),
+    buy_order: data.buy_order,
+    session_id: data.session_id,
+  }
 }
 
 function plain<T>(value: T): Record<string, unknown> {
@@ -57,7 +82,7 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
 
   protected logger_: Logger
   protected options_: WebpayOptions
-  protected transaction_: ReturnType<typeof createWebpayTransaction>
+  protected transaction_: WebpayTransactionClient
 
   constructor(container: InjectedDependencies, options: WebpayOptions) {
     super(container, options)
@@ -66,7 +91,8 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
       environment: "integration",
       ...options,
     }
-    this.transaction_ = createWebpayTransaction(this.options_)
+    this.transaction_ =
+      container.webpayTransaction ?? createWebpayTransaction(this.options_)
   }
 
   static validateOptions(options: Record<string, unknown>): void {
@@ -120,19 +146,48 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
       typeof data.cart_id === "string" ? data.cart_id : undefined
     )
 
-    const response = await this.transaction_.create(
-      buyOrder,
-      sessionId,
-      amount,
-      this.options_.return_url
-    )
+    let response: WebpayCreateResult
+    try {
+      response = await this.transaction_.create(
+        buyOrder,
+        sessionId,
+        amount,
+        this.options_.return_url
+      )
+    } catch {
+      this.logger_.error("Webpay transaction initialization failed")
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "No se pudo iniciar la transacción Webpay."
+      )
+    }
+
+    let redirectUrl: URL
+    try {
+      redirectUrl = new URL(response.url)
+    } catch {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "Webpay devolvió una URL de pago inválida."
+      )
+    }
+    if (
+      typeof response.token !== "string" ||
+      response.token.length === 0 ||
+      redirectUrl.protocol !== "https:"
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "Webpay devolvió una respuesta de inicialización inválida."
+      )
+    }
 
     return {
       id: response.token,
       data: {
         ...data,
         token_ws: response.token,
-        webpay_url: response.url,
+        webpay_url: redirectUrl.toString(),
         buy_order: buyOrder,
         session_id: sessionId,
         cart_id: sessionId.startsWith("cart_") ? sessionId : data.cart_id,
@@ -146,16 +201,11 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
   async initiatePayment(
     input: InitiatePaymentInput
   ): Promise<InitiatePaymentOutput> {
-    try {
-      return await this.createRemotePayment(
-        input.amount,
-        input.currency_code,
-        input.data
-      )
-    } catch (error) {
-      this.logger_.error("Webpay initiatePayment failed", error as Error)
-      throw error
-    }
+    return this.createRemotePayment(
+      input.amount,
+      input.currency_code,
+      input.data
+    )
   }
 
   async updatePayment(
@@ -184,46 +234,62 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
   ): Promise<AuthorizePaymentOutput> {
     const data = record(input.data)
     const token = data.token_ws
-    const amount = data.amount
-    const buyOrder = data.buy_order
-    const sessionId = data.session_id
-
-    if (
-      typeof token !== "string" ||
-      typeof amount !== "number" ||
-      typeof buyOrder !== "string" ||
-      typeof sessionId !== "string"
-    ) {
+    if (typeof token !== "string") {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        "La sesión Webpay no contiene token/monto/buy_order/session_id válidos."
+        "La sesión Webpay no contiene un token válido."
       )
     }
 
-    let result: Record<string, unknown>
+    const expected = transactionIdentity(data)
+    let result: Record<string, unknown> | undefined
 
     try {
-      result = plain(await this.transaction_.commit(token))
-    } catch (commitError) {
-      // Un retry después de una confirmación exitosa puede recibir 422.
-      // Antes de fallar, consultamos status para resolver el estado real.
-      try {
-        result = plain(await this.transaction_.status(token))
-      } catch {
-        throw commitError
+      const current = plain(await this.transaction_.status(token))
+      if (current.status === "AUTHORIZED") {
+        assertApprovedCommit(current, expected)
+        result = current
+      } else if (current.status === "INITIALIZED") {
+        assertTransactionIdentity(current, expected)
+        let committed: Record<string, unknown> | undefined
+        try {
+          committed = plain(await this.transaction_.commit(token))
+        } catch {
+          const recovered = plain(await this.transaction_.status(token))
+          assertApprovedCommit(recovered, expected)
+          result = recovered
+        }
+        if (committed) {
+          try {
+            assertApprovedCommit(committed, expected)
+            result = committed
+          } catch {
+            const recovered = plain(await this.transaction_.status(token))
+            assertApprovedCommit(recovered, expected)
+            result = recovered
+          }
+        }
+      } else {
+        throw new MedusaError(
+          MedusaError.Types.UNEXPECTED_STATE,
+          "El estado remoto Webpay no permite autorizar este pago."
+        )
       }
+    } catch {
+      this.logger_.error("Webpay authorization could not be reconciled")
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "No fue posible verificar el estado final del pago Webpay; requiere conciliación."
+      )
     }
 
-    assertApprovedCommit(
-      result as {
-        amount?: number
-        status?: string
-        response_code?: number
-        buy_order?: string
-        session_id?: string
-      },
-      { amount, buy_order: buyOrder, session_id: sessionId }
-    )
+    if (!result) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "No se pudo confirmar el resultado de autorización Webpay; requiere conciliación."
+      )
+    }
+    assertApprovedCommit(result, expected)
 
     return {
       status: "captured" as PaymentSessionStatus,
@@ -265,6 +331,7 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
     }
 
     const status = plain(await this.transaction_.status(token))
+    assertTransactionIdentity(status, transactionIdentity(data))
     if (!["AUTHORIZED", "CAPTURED", "PARTIALLY_NULLIFIED"].includes(String(status.status))) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
@@ -293,7 +360,33 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
     }
 
     const amount = toClpIntegerAmount(input.amount)
+    const current = plain(await this.transaction_.status(token))
+    assertTransactionIdentity(current, transactionIdentity(data))
+    const refundableBalance = current.balance
+    if (
+      !["AUTHORIZED", "CAPTURED", "PARTIALLY_NULLIFIED"].includes(
+        String(current.status)
+      ) ||
+      typeof refundableBalance !== "number" ||
+      !Number.isSafeInteger(refundableBalance) ||
+      refundableBalance < amount
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "El saldo remoto de Webpay no confirma que el monto pueda reembolsarse; requiere conciliación."
+      )
+    }
+
     const result = plain(await this.transaction_.refund(token, amount))
+    if (
+      result.type !== "REVERSED" &&
+      !(result.type === "NULLIFIED" && result.response_code === 0)
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "Webpay no confirmó el reembolso; requiere conciliación."
+      )
+    }
 
     return {
       data: {
@@ -304,7 +397,10 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
           typeof result.response_code === "number"
             ? result.response_code
             : undefined,
-        refunded_amount: amount,
+        refunded_amount:
+          typeof result.nullified_amount === "number"
+            ? result.nullified_amount
+            : amount,
       },
     }
   }
@@ -322,7 +418,10 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
     return {
       data: {
         ...data,
-        ...status,
+        external_status:
+          typeof status.status === "string"
+            ? status.status
+            : data.external_status,
       },
     }
   }
@@ -341,22 +440,35 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
     const externalStatus = String(status.status ?? "")
 
     if (["AUTHORIZED", "CAPTURED", "PARTIALLY_NULLIFIED"].includes(externalStatus)) {
-      const refundable =
-        typeof status.amount === "number"
-          ? status.amount
-          : typeof data.amount === "number"
-            ? data.amount
-            : 0
-
-      if (refundable > 0) {
-        await this.transaction_.refund(token, refundable)
-        return {
-          data: {
-            ...data,
-            external_status: externalStatus,
-            rollback_refund: true,
-          },
-        }
+      assertTransactionIdentity(status, transactionIdentity(data))
+      if (
+        typeof status.balance !== "number" ||
+        !Number.isSafeInteger(status.balance) ||
+        status.balance <= 0
+      ) {
+        throw new MedusaError(
+          MedusaError.Types.UNEXPECTED_STATE,
+          "Webpay no informó un saldo reembolsable verificable."
+        )
+      }
+      const refund = plain(
+        await this.transaction_.refund(token, status.balance)
+      )
+      if (
+        refund.type !== "REVERSED" &&
+        !(refund.type === "NULLIFIED" && refund.response_code === 0)
+      ) {
+        throw new MedusaError(
+          MedusaError.Types.UNEXPECTED_STATE,
+          "Webpay no confirmó el reembolso de compensación; requiere conciliación."
+        )
+      }
+      return {
+        data: {
+          ...data,
+          external_status: externalStatus,
+          rollback_refund: true,
+        },
       }
     }
 
@@ -378,13 +490,11 @@ export default class WebpayPaymentProviderService extends AbstractPaymentProvide
       return { status: "pending" as PaymentSessionStatus }
     }
 
-    try {
-      const status = await this.transaction_.status(token)
-      return {
-        status: mapWebpayStatus(status.status) as PaymentSessionStatus,
-      }
-    } catch {
-      return { status: "pending" as PaymentSessionStatus }
+    const status = await this.transaction_.status(token)
+    return {
+      status: mapWebpayStatus(
+        typeof status.status === "string" ? status.status : undefined
+      ) as PaymentSessionStatus,
     }
   }
 

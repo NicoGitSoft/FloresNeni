@@ -12,6 +12,7 @@ aislados y distinguir fallas de Neni de fallas externas.
 | `pnpm neni:test:webpay` | provider Webpay | no | no | sí |
 | `pnpm neni:check` | builds/typecheck | no | no | sí |
 | `pnpm neni:verify:payments` | configuración Medusa | lectura | no | sí, después del bootstrap |
+| `NENI_WEBPAY_CART_ID=cart_... pnpm neni:webpay:diagnose` | conciliación Webpay/Order | lectura | Transbank status | operador |
 | `pnpm neni:e2e:order` | Cart→Order real | sí | no | local/smoke |
 | `pnpm neni:e2e:browser` | navegador real | sí | no | local |
 | `pnpm neni:e2e:webpay` | Webpay integración | sí | **sí** | **no** |
@@ -53,6 +54,10 @@ Los E2E guardan evidencia temporal bajo `/tmp` para no contaminar Git:
 - `/tmp/neni-webpay-*.png`
 - `/tmp/neni-webpay-*.log`
 - `/tmp/neni-webpay-*.json`
+
+El diagnóstico Webpay es de solo lectura. Redacta el token como un prefijo
+SHA-256, consulta el estado remoto y compara las relaciones Order/Cart y
+Order/Payment Collection; nunca ejecuta commit, refund ni reparación.
 
 ## Estado esperado antes del merge de Webpay v1
 

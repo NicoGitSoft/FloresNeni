@@ -1,14 +1,23 @@
 import { BigNumber, MedusaError } from "@medusajs/framework/utils"
 
-type CommitLike = {
-  amount?: number
-  status?: string
-  response_code?: number
-  buy_order?: string
-  session_id?: string
+type TransactionIdentity = {
+  amount: number
+  buy_order: string
+  session_id: string
 }
 
 export function toClpIntegerAmount(value: unknown): number {
+  if (
+    typeof value !== "number" &&
+    typeof value !== "string" &&
+    !(value instanceof BigNumber)
+  ) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      "Webpay requiere un monto CLP entero, positivo y seguro."
+    )
+  }
+
   const amount = new BigNumber(value as never).numeric
 
   if (!Number.isSafeInteger(amount) || amount <= 0) {
@@ -51,38 +60,41 @@ export function createSessionId(cartId?: string): string {
 }
 
 export function assertApprovedCommit(
-  result: CommitLike,
-  expected: {
-    amount: number
-    buy_order: string
-    session_id: string
-  }
+  result: Record<string, unknown>,
+  expected: TransactionIdentity
 ): void {
-  if (result.status !== "AUTHORIZED" || Number(result.response_code) !== 0) {
+  if (result.status !== "AUTHORIZED" || result.response_code !== 0) {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
       `Webpay no autorizó la transacción (status=${result.status ?? "unknown"}, response_code=${result.response_code ?? "unknown"}).`
     )
   }
 
-  if (Number(result.amount) !== expected.amount) {
+  assertTransactionIdentity(result, expected)
+}
+
+export function assertTransactionIdentity(
+  result: Record<string, unknown>,
+  expected: TransactionIdentity
+): void {
+  if (result.amount !== expected.amount) {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
-      "El monto confirmado por Webpay no coincide con el monto de la sesión."
+      "El monto consultado a Webpay no coincide con el monto de la sesión."
     )
   }
 
   if (result.buy_order !== expected.buy_order) {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
-      "La buy_order confirmada por Webpay no coincide."
+      "La buy_order consultada a Webpay no coincide."
     )
   }
 
   if (result.session_id !== expected.session_id) {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
-      "La session_id confirmada por Webpay no coincide."
+      "La session_id consultada a Webpay no coincide."
     )
   }
 }
