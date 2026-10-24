@@ -135,7 +135,7 @@ export default function ProductGrid() {
             <div className="neni-quick-dialog__content">
               <div className="neni-quick-dialog__gallery">
                 <div className="neni-quick-dialog__frame">
-                {quickImages.length > 0 && <img src={quickImages[imageIndex] ?? quickImages[0]} alt={selected.title} />}
+                {quickImages.length > 0 && <img src={quickImages[imageIndex] ?? quickImages[0]} alt={selected.title} onLoad={event => captureTone(selected.handle, event.currentTarget)} />}
                 </div>
                 {quickImages.length > 1 && (
                   <div className="neni-quick-dialog__thumbnails" aria-label="Fotografías del diseño">
