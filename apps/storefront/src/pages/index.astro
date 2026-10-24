@@ -109,5 +109,10 @@ import "../styles/storefront.css"
       <div class="footer__bottom"><span>© {new Date().getFullYear()} Neni — Taller de flores</span><span>Hecho con amor, flor a flor.</span></div>
     </footer>
     <script is:inline type="module" src="/js/botanical-wind.js"></script>
+    <script is:inline>
+      document.querySelectorAll(".mobile-nav a").forEach(link => {
+        link.addEventListener("click", () => link.closest("details")?.removeAttribute("open"));
+      });
+    </script>
   </body>
 </html>
