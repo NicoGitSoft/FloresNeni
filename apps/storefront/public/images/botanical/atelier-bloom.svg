@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 380" fill="none" aria-hidden="true">
+  <!-- V3: short stem and EXACTLY two symmetrical opposite leaves. -->
+  <g stroke="#79515A" stroke-linecap="round" stroke-linejoin="round" opacity=".65">
+    <path d="M180 124 C172 173 193 214 184 260 C180 283 176 305 179 341" stroke-width="2.35"/>
+    <path d="M183 263 C145 238 118 223 92 226 M187 263 C228 240 251 223 274 224" stroke-width="1.8"/>
+    <path d="M92 226 C56 211 45 179 45 159 C87 168 110 194 92 226Z"
+      fill="#B4B99C" fill-opacity=".24" stroke-width="1.35"/>
+    <path d="M274 224 C257 186 280 161 318 144 C322 182 308 209 274 224Z"
+      fill="#B4B99C" fill-opacity=".24" stroke-width="1.35"/>
+    <path d="M92 226 Q79 199 47 164 M274 224 Q293 185 315 148" stroke-width=".85" opacity=".42"/>
+    <path d="M180 120C126 116 106 79 121 48C155 52 181 77 180 120Z" fill="#DDAEA9" fill-opacity=".22"/>
+    <path d="M180 120C189 62 219 42 248 57C248 90 222 112 180 120Z" fill="#BF8193" fill-opacity=".16"/>
+    <path d="M180 120C145 92 150 42 178 17C203 46 209 89 180 120Z" fill="#C98B89" fill-opacity=".13"/>
+    <path d="M180 120C208 96 248 105 268 131C232 147 195 145 180 120Z" fill="#DFAE93" fill-opacity=".2"/>
+    <path d="M180 120C147 153 106 146 91 127C114 105 149 99 180 120Z" fill="#AF858B" fill-opacity=".17"/>
+    <path d="M180 120C166 148 167 169 182 189C202 169 202 140 180 120Z" fill="#E4C4AE" fill-opacity=".21"/>
+    <path d="M173 114Q181 106 187 119Q184 130 174 125Z" fill="#A46A70" fill-opacity=".26" stroke-width="1.2"/>
+  </g>
+</svg>

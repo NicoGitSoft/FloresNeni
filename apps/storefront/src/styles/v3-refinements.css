@@ -1,0 +1,280 @@
+/* Neni v3 / V3: visual specification from live mobile and desktop review.
+ * Scoped overrides: old .product-card button selector must NEVER circle media. */
+body.neni-v3 {
+  --neni-floral-ivory: #fbf5ed;
+}
+body.neni-v3 .brand img {
+  width: clamp(125px, 10vw, 156px);
+  max-height: 76px;
+  object-fit: contain;
+}
+body.neni-v3 .site-header { min-height: 94px; }
+body.neni-v3 .catalog {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 13% 16%, rgba(219,157,158,.16), transparent 30%),
+    radial-gradient(ellipse at 90% 45%, rgba(132,151,105,.14), transparent 35%),
+    radial-gradient(ellipse at 25% 80%, rgba(216,183,149,.18), transparent 34%),
+    #f8f2eb;
+}
+body.neni-v3 .catalog::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image: url("/images/botanical/atelier-bloom.svg");
+  background-size: clamp(180px, 24vw, 330px) auto;
+  background-repeat: repeat-y;
+  background-position: 102% 8%;
+  opacity: .16;
+  pointer-events: none;
+  filter: saturate(.75);
+}
+body.neni-v3 .catalog::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -45px;
+  top: 37%;
+  width: min(23vw, 330px);
+  height: 420px;
+  background: url("/images/botanical/atelier-bloom.svg") center / contain no-repeat;
+  transform: rotate(-13deg);
+  opacity: .15;
+  pointer-events: none;
+}
+.floral-scene__canvas {
+  pointer-events: none;
+  display: block;
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.catalog > .floral-scene__canvas {
+  position: sticky;
+  top: 82px;
+  height: min(88dvh, 850px);
+  margin-bottom: calc(-1 * min(88dvh, 850px));
+  opacity: .82;
+  z-index: 0;
+}
+body.neni-v3 .catalog > :not(.floral-scene__canvas) { position: relative; z-index: 1; }
+body.neni-v3 .products-grid { align-items: stretch; }
+body.neni-v3 .product-card {
+  --flower-wash: #f4e9e1;
+  --flower-frame: #dbc8bc;
+  --flower-ink: #794854;
+  position: relative;
+  background: linear-gradient(155deg, rgba(255,255,253,.94), var(--flower-wash));
+  border: 1px solid color-mix(in srgb, var(--flower-frame), white 55%);
+  overflow: visible;
+  border-radius: 3px 34px 3px 26px;
+}
+body.neni-v3 .product-card__visual {
+  position: relative;
+  isolation: isolate;
+  padding: 0 12px 12px 0;
+  margin: 0;
+}
+body.neni-v3 .product-card__visual::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 12px; left: 12px; right: 0; bottom: 0;
+  border-radius: 3px 34px 3px 26px;
+  background: var(--flower-frame);
+  border: 1px solid rgba(111,79,79,.12);
+  box-shadow: 6px 8px 26px rgba(85,62,62,.06);
+}
+body.neni-v3 .product-card .product-card__media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 4.45;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 3px 34px 3px 26px;
+  background: var(--flower-wash);
+  position: relative;
+  cursor: zoom-in;
+}
+body.neni-v3 .product-card .product-card__media > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+body.neni-v3 .product-card .product-card__media .product-card__edition {
+  z-index: 2;
+  border-radius: 3px 15px 3px 15px;
+}
+body.neni-v3 .product-card .product-card__media .product-card__preview { z-index: 2; }
+body.neni-v3 .product-card__content { padding: 1.1rem 1.3rem 1.55rem; }
+body.neni-v3 .product-card h3 { color: #453a36; }
+body.neni-v3 .product-card__footer strong { color: var(--flower-ink); }
+body.neni-v3 .product-card__footer button {
+  border: 1px solid var(--neni-wine);
+  border-radius: 3px 17px 3px 17px;
+  padding: .76rem 1.05rem;
+  background: var(--neni-wine);
+  color: #fff;
+  transition: background-color .3s ease, border-color .3s ease, transform .25s ease, box-shadow .25s ease;
+}
+body.neni-v3 .product-card__footer button:hover,
+body.neni-v3 .product-card__footer button:focus-visible {
+  transform: translateY(-2px) scale(1.035);
+  background: var(--flower-ink);
+  border-color: var(--flower-ink);
+  box-shadow: 0 8px 20px rgba(80,49,59,.16);
+}
+body.neni-v3 .product-card__footer button:active { transform: scale(.975); }
+body.neni-v3 .product-card .product-card__media:hover,
+body.neni-v3 .product-card .product-card__media:focus-visible { box-shadow: 0 6px 24px rgba(67,42,44,.13); }
+body.neni-v3 :is(.product-card__media, .product-card__footer button, .neni-dialog button, .brand, .navigation a):focus-visible {
+  outline: 3px solid #bb7688;
+  outline-offset: 3px;
+}
+/* Elevated, flower-tinted quick-view (native dialog stays above the page wind). */
+body.neni-v3 .neni-quick-dialog {
+  --flower-wash: #f3e7df;
+  --flower-frame: #e1c9bb;
+  --flower-ink: #794854;
+  position: fixed;
+  isolation: isolate;
+  width: min(960px, calc(100% - 1.6rem));
+  padding: 0;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--flower-frame), white 40%);
+  border-radius: 3px 38px 3px 38px;
+  background:
+    radial-gradient(ellipse at 86% 70%, var(--flower-wash) 0%, transparent 66%),
+    radial-gradient(ellipse at 8% 4%, rgba(217,170,156,.15), transparent 55%),
+    #fffaf5;
+}
+body.neni-v3 .neni-quick-dialog::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: -9%; bottom: 5%;
+  width: 36%;
+  aspect-ratio: 360 / 460;
+  background: url("/images/botanical/atelier-bloom.svg") center / contain no-repeat;
+  transform: rotate(19deg);
+  opacity: .13;
+  pointer-events: none;
+}
+body.neni-v3 .neni-quick-dialog > .floral-scene__canvas { z-index: 0; }
+body.neni-v3 .neni-quick-dialog > :not(.floral-scene__canvas) { position: relative; z-index: 1; }
+body.neni-v3 .neni-quick-dialog__content {
+  position: relative;
+  gap: clamp(1rem,3vw,2.3rem);
+  padding: clamp(1.2rem,3vw,2.4rem);
+  overflow: hidden;
+}
+body.neni-v3 .neni-quick-dialog__gallery { padding: 0 13px 13px 0; }
+body.neni-v3 .neni-quick-dialog__frame {
+  position: relative;
+  isolation: isolate;
+}
+body.neni-v3 .neni-quick-dialog__frame::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 13px; right: -13px; bottom: -13px; left: 13px;
+  border-radius: 3px 32px 3px 27px;
+  background: var(--flower-frame);
+  border: 1px solid rgba(120,80,75,.1);
+}
+body.neni-v3 .neni-quick-dialog__frame > img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  height: auto;
+  max-height: 515px;
+  object-fit: cover;
+  border-radius: 3px 32px 3px 27px;
+}
+body.neni-v3 .neni-quick-dialog__text { position: relative; z-index: 1; }
+body.neni-v3 .neni-quick-dialog__text h2 { color: #453a36; }
+body.neni-v3 .neni-quick-dialog__text strong { color: var(--flower-ink); }
+body.neni-v3 .neni-quick-dialog__ornament {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  width: 125px;
+  height: auto;
+  object-fit: contain;
+  opacity: .27;
+  right: .3rem; bottom: -1.7rem;
+  transform: rotate(17deg);
+}
+body.neni-v3 .neni-quick-dialog__text > button {
+  border-radius: 3px 20px 3px 20px;
+  background: var(--neni-wine);
+  color: #fff;
+  font-weight: 600;
+  transition: background-color .3s ease, box-shadow .3s ease, transform .24s ease;
+}
+body.neni-v3 .neni-quick-dialog__text > button:hover,
+body.neni-v3 .neni-quick-dialog__text > button:focus-visible {
+  background: var(--flower-ink);
+  box-shadow: 0 10px 25px rgba(94,54,61,.2);
+  transform: translateY(-2px) scale(1.035);
+}
+body.neni-v3 .neni-quick-dialog__text > button:active { transform: scale(.97); }
+body.neni-v3 .neni-dialog__close {
+  position: relative;
+  transition: transform .25s ease, background-color .25s ease, color .25s ease;
+}
+body.neni-v3 .neni-dialog__close:hover,
+body.neni-v3 .neni-dialog__close:focus-visible {
+  transform: rotate(8deg) scale(1.14);
+  background: var(--neni-wine);
+  color: #fff;
+}
+body.neni-v3 .neni-quick-dialog__thumbnails button {
+  border-radius: 3px 12px 3px 12px;
+  transition: transform .24s ease, border-color .24s ease;
+}
+body.neni-v3 .neni-quick-dialog__thumbnails button:hover { transform: translateY(-3px); }
+@media (max-width: 760px) {
+  body.neni-v3 .site-header { min-height: 76px; }
+  body.neni-v3 .brand img { width: 108px; max-height: 63px; }
+  body.neni-v3 .catalog { padding-inline: 1.1rem; }
+  body.neni-v3 .neni-quick-dialog { max-height: 91dvh; width: calc(100% - 1rem); }
+  body.neni-v3 .neni-quick-dialog__content { grid-template-columns: 1fr; padding: 1.1rem; gap: 1rem; }
+  body.neni-v3 .neni-quick-dialog__frame > img { max-height: min(42dvh, 355px); }
+  body.neni-v3 .neni-quick-dialog__gallery { padding: 0 10px 10px 0; }
+  body.neni-v3 .neni-quick-dialog__ornament { width: 92px; opacity: .16; }
+  body.neni-v3 .catalog::before { opacity: .12; background-size: 210px auto; }
+  body.neni-v3 .neni-quick-dialog__text > button { min-height: 46px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.neni-v3 .floral-scene__canvas { display: none; }
+  body.neni-v3 .product-card__media img,
+  body.neni-v3 .product-card__footer button,
+  body.neni-v3 .neni-dialog button { transition: none !important; transform: none !important; }
+}
+
+/* Ambient atmosphere continues across the whole editorial page. */
+body.neni-v3 .story-block,
+body.neni-v3 .closing-note { position: relative; isolation: isolate; overflow: hidden; }
+body.neni-v3 .story-block > .floral-scene__canvas,
+body.neni-v3 .closing-note > .floral-scene__canvas { z-index: 0; opacity: .52; }
+body.neni-v3 .story-block > :not(.floral-scene__canvas),
+body.neni-v3 .closing-note > :not(.floral-scene__canvas) { position: relative; z-index: 1; }
+body.neni-v3 .footer { position: relative; isolation: isolate; }
+body.neni-v3 .footer::before {
+  content: ""; position: absolute; right: 2%; bottom: 8%;
+  width: min(26vw, 320px); aspect-ratio: 360/380;
+  background: url("/images/botanical/atelier-bloom.svg") center/contain no-repeat;
+  opacity: .1; transform: rotate(-12deg); pointer-events: none;
+}
+body.neni-v3 .footer > * { position: relative; z-index: 1; }
+body.neni-v3 .product-card .product-card__media:hover { opacity: 1; }

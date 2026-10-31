@@ -2,10 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [v2]
+    branches: [v2, v3]
   pull_request:
-    branches: [v2]
+    branches: [v2, v3]
   workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -72,6 +76,9 @@ jobs:
       - name: Install frozen lockfile
         run: pnpm install --frozen-lockfile
 
+      - name: Frontend v3 smoke checks
+        run: pnpm neni:test:frontend-v3
+
       - name: Smoke test clean bootstrap twice
         run: |
           pnpm --filter @dtc/backend exec medusa db:migrate
@@ -90,7 +97,7 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
             git diff --check "origin/${GITHUB_BASE_REF}...HEAD"
           else
-            git diff --check "HEAD^" HEAD
+            git diff --check "origin/v2...HEAD"
           fi
 
       - name: Run checkout unit tests
